@@ -1,0 +1,1 @@
+{ "name": "assistant-whatsapp", "private": true, "engines": { "node": ">=20" } }

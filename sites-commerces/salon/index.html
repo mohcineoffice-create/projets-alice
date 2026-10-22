@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio Lina – Coiffure et beauté à Tanger</title>
+<meta name="description" content="Salon de coiffure et de beauté pour femmes à Tanger : brushing, coloration, soins kératine, hammam. Réservation en ligne par WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--plum:#4B1D3F;--plum-2:#6B2C5A;--blush:#F7D6E0;--blush-2:#FCEEF2;--gold:#B8902A;--ink:#2A1626;--mute:#7A5F72;--line:#EBD3DD}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Jost',system-ui,sans-serif;font-weight:400;color:var(--ink);background:#fff;font-size:17px;line-height:1.6}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.demo{background:var(--plum);color:var(--blush);text-align:center;font-size:14px;padding:8px 16px}
+.nav{display:flex;justify-content:space-between;align-items:center;padding-top:22px;padding-bottom:22px}
+.logo{font-family:'Italiana',serif;font-size:30px;color:var(--plum)}
+.btn{display:inline-block;background:var(--plum);color:#fff;padding:13px 24px;border-radius:999px;text-decoration:none;font-weight:500;border:0;font:inherit;cursor:pointer}
+.btn.soft{background:var(--blush);color:var(--plum)}
+
+.hero{display:grid;grid-template-columns:1fr 1fr;min-height:560px}
+.hero .txt{background:var(--blush-2);padding:70px max(20px,calc((100vw - 1080px)/2 + 20px)) 70px max(20px,calc((100vw - 1080px)/2 + 20px));display:flex;flex-direction:column;justify-content:center}
+.hero h1{font-family:'Italiana',serif;font-weight:400;font-size:clamp(46px,6.5vw,86px);line-height:1;color:var(--plum)}
+.hero p{margin:24px 0 30px;color:var(--mute);max-width:40ch;font-size:18px}
+/* signature: flowing hair strands */
+.art{background:var(--plum);position:relative;overflow:hidden}
+.art svg{position:absolute;inset:0;width:100%;height:100%}
+.art .cap{position:absolute;left:28px;bottom:26px;color:var(--blush);font-size:15px;max-width:30ch}
+
+section{padding:80px 0}
+h2{font-family:'Italiana',serif;font-weight:400;font-size:clamp(36px,5vw,56px);color:var(--plum);margin-bottom:8px}
+.lead{color:var(--mute);max-width:60ch;margin-bottom:36px}
+
+.svc{display:grid;grid-template-columns:1fr 1fr;gap:0 56px}
+.row{display:grid;grid-template-columns:1fr auto;gap:2px 16px;padding:18px 0;border-bottom:1px solid var(--line)}
+.row b{font-weight:500}
+.row .p{font-weight:500;color:var(--plum)}
+.dur{grid-column:1/-1;display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mute)}
+.dur i{display:block;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--blush))}
+
+.book{background:var(--plum);color:#fff;border-radius:32px;padding:44px;display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.book h2{color:#fff}
+.book p{color:var(--blush)}
+form label{display:block;font-size:14px;color:var(--blush);margin:14px 0 6px}
+select,input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font:inherit}
+select option{color:var(--ink)}
+.preview{background:#fff;color:var(--ink);border-radius:18px;padding:22px;align-self:start}
+.preview h3{font-size:14px;color:var(--mute);font-weight:400;margin-bottom:10px}
+.bubble{background:#DCF8C6;border-radius:12px 12px 2px 12px;padding:14px 16px;font-size:16px;white-space:pre-line;min-height:110px}
+.preview .btn{margin-top:16px;background:#25D366}
+
+.info{display:grid;grid-template-columns:repeat(3,1fr);gap:30px}
+.info h3{font-size:14px;color:var(--mute);font-weight:400;margin-bottom:4px}
+.info p{font-size:19px}
+footer{padding:26px 0;color:var(--mute);font-size:14px;border-top:1px solid var(--line)}
+
+@media (max-width:820px){
+  .hero,.svc,.book,.info{grid-template-columns:1fr}
+  .hero .art{min-height:260px}
+  .book{padding:28px}
+  section{padding:60px 0}
+}
+@media (prefers-reduced-motion:no-preference){
+  .art path{stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 2.4s ease-out forwards}
+  .art path:nth-child(2){animation-delay:.2s}.art path:nth-child(3){animation-delay:.4s}.art path:nth-child(4){animation-delay:.6s}.art path:nth-child(5){animation-delay:.8s}
+  @keyframes draw{to{stroke-dashoffset:0}}
+}
+</style>
+</head>
+<body>
+<div class="demo">Site de démonstration : salon fictif, créé comme exemple.</div>
+<div class="wrap nav"><div class="logo">Studio Lina</div><a class="btn" href="#reserver">Réserver</a></div>
+
+<div class="hero">
+  <div class="txt">
+    <h1>Vos cheveux, entre de bonnes mains.</h1>
+    <p>Brushing, coloration, soins kératine et hammam, dans un salon réservé aux femmes au centre de Tanger.</p>
+    <div><a class="btn" href="#reserver">Choisir un créneau</a></div>
+  </div>
+  <div class="art" aria-hidden="true">
+    <svg viewBox="0 0 500 560" preserveAspectRatio="xMidYMid slice" fill="none" stroke-linecap="round">
+      <path d="M-20 80 C 120 40, 180 200, 300 160 S 480 60, 540 140" stroke="#F7D6E0" stroke-width="10"/>
+      <path d="M-20 170 C 100 140, 200 300, 320 250 S 470 170, 540 240" stroke="#B8902A" stroke-width="6"/>
+      <path d="M-20 260 C 130 230, 190 390, 310 340 S 480 260, 540 330" stroke="#F7D6E0" stroke-width="14"/>
+      <path d="M-20 360 C 110 330, 210 480, 330 430 S 470 360, 540 430" stroke="#E3A6BC" stroke-width="8"/>
+      <path d="M-20 450 C 120 420, 190 580, 310 520 S 480 450, 540 520" stroke="#F7D6E0" stroke-width="5"/>
+    </svg>
+    <div class="cap">Lissage, ondulations, coloration : chaque soin commence par un diagnostic de vos cheveux.</div>
+  </div>
+</div>
+
+<section id="prestations">
+  <div class="wrap">
+    <h2>Prestations</h2>
+    <p class="lead">Les prix varient selon la longueur des cheveux. La durée vous aide à organiser votre journée.</p>
+    <div class="svc" id="svc"></div>
+  </div>
+</section>
+
+<section id="reserver" style="padding-top:0">
+  <div class="wrap book">
+    <div>
+      <h2>Réserver</h2>
+      <p>Choisissez votre prestation et le jour : votre message WhatsApp est prêt, il ne reste qu'à l'envoyer.</p>
+      <form id="f" onsubmit="return false">
+        <label for="s">Prestation</label><select id="s"></select>
+        <label for="j">Jour</label><select id="j"></select>
+        <label for="m">Moment</label>
+        <select id="m"><option>Matin</option><option>Début d'après-midi</option><option>Fin d'après-midi</option></select>
+        <label for="n">Votre prénom</label><input id="n" placeholder="Ex. Salma" autocomplete="given-name">
+      </form>
+    </div>
+    <div class="preview">
+      <h3>Aperçu de votre message</h3>
+      <div class="bubble" id="msg"></div>
+      <a class="btn" href="#" onclick="return false">Envoyer sur WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap info">
+    <div><h3>Adresse</h3><p>Boulevard Pasteur<br>Tanger</p></div>
+    <div><h3>Horaires</h3><p>Mardi au dimanche<br>10 h – 20 h</p></div>
+    <div><h3>Fermé</h3><p>Le lundi</p></div>
+  </div>
+</section>
+<footer><div class="wrap">Studio Lina, exemple de site réalisé pour une présentation commerciale.</div></footer>
+
+<script>
+var S=[["Brushing",80,45],["Coupe et brushing",150,75],["Coloration racines",250,90],["Mèches ou balayage",600,180],["Soin kératine",900,150],["Hammam et gommage",200,60],["Manucure",100,40],["Maquillage soirée",350,60]];
+var svc=document.getElementById('svc'),sel=document.getElementById('s');
+svc.innerHTML=S.map(function(x){return '<div class="row"><b>'+x[0]+'</b><span class="p">dès '+x[1]+' DH</span><span class="dur"><i style="width:'+Math.round(x[2]/180*160)+'px"></i>'+(x[2]>=60?Math.floor(x[2]/60)+' h '+(x[2]%60?x[2]%60+' min':''):x[2]+' min')+'</span></div>'}).join('');
+sel.innerHTML=S.map(function(x,i){return '<option value="'+i+'">'+x[0]+' ('+x[1]+' DH)</option>'}).join('');
+var j=document.getElementById('j'),days=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'],o='';
+for(var k=0,c=0;c<7;k++){var d=new Date();d.setDate(d.getDate()+k);if(d.getDay()===1)continue;o+='<option>'+(k===0?"Aujourd'hui":k===1?'Demain':days[d.getDay()][0].toUpperCase()+days[d.getDay()].slice(1)+' '+d.getDate())+'</option>';c++}
+j.innerHTML=o;
+function upd(){var s=S[sel.value],n=document.getElementById('n').value.trim();
+document.getElementById('msg').textContent='Bonjour Studio Lina'+(n?', ici '+n:'')+'.\nJe souhaite réserver : '+s[0]+'.\n'+j.value+', '+document.getElementById('m').value.toLowerCase()+'.\nMerci de me confirmer un horaire.'}
+['s','j','m','n'].forEach(function(id){document.getElementById(id).addEventListener('input',upd)});upd();
+</script>
+</body>
+</html>

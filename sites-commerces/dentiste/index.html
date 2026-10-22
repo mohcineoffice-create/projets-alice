@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cabinet dentaire Al Amal – Rabat Agdal</title>
+<meta name="description" content="Cabinet dentaire à Rabat Agdal : soins, détartrage, blanchiment, implants. Tarifs affichés, rendez-vous par WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--teal:#0E5E6F;--teal-2:#0A4855;--sky:#E6F3F5;--navy:#12263A;--coral:#FF6F59;--mute:#55707A;--line:#D6E6EA;--white:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',system-ui,sans-serif;color:var(--navy);background:var(--white);font-size:17px;line-height:1.6}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--coral);outline-offset:3px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:'Sora',sans-serif;line-height:1.15}
+.demo{background:var(--navy);color:#fff;text-align:center;font-size:14px;padding:8px 16px}
+.nav{display:flex;justify-content:space-between;align-items:center;padding-top:20px;padding-bottom:20px;gap:12px}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Sora';font-weight:700;font-size:19px;color:var(--teal)}
+.logo svg{width:30px;height:30px}
+.btn{display:inline-block;background:var(--coral);color:#fff;font-weight:700;padding:13px 22px;border-radius:12px;text-decoration:none}
+.btn.line{background:transparent;color:var(--teal);border:2px solid var(--teal)}
+
+.hero{background:var(--sky);padding:60px 0 70px}
+.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:50px;align-items:center}
+.hero h1{font-size:clamp(36px,5.4vw,60px);color:var(--teal-2)}
+.hero p{margin:20px 0 28px;color:var(--mute);max-width:50ch;font-size:18px}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+
+/* signature: live status card */
+.status{background:var(--white);border-radius:24px;padding:28px;border:1px solid var(--line)}
+.status .now{display:flex;align-items:center;gap:12px;font-family:'Sora';font-weight:700;font-size:22px}
+.dot{width:14px;height:14px;border-radius:50%;background:#9AA9AE;flex:none}
+.dot.on{background:#1FA67A;box-shadow:0 0 0 6px rgba(31,166,122,.18)}
+.status .next{color:var(--mute);margin:6px 0 20px}
+.week{width:100%;border-collapse:collapse;font-size:15px}
+.week td{padding:7px 0;border-top:1px solid var(--line)}
+.week td:last-child{text-align:right}
+.week tr.today td{font-weight:700;color:var(--teal)}
+.urgence{margin-top:18px;background:#FFF0ED;color:#9C2E1E;border-radius:12px;padding:12px 14px;font-size:15px}
+
+section{padding:80px 0}
+h2{font-size:clamp(28px,4vw,40px);color:var(--teal-2);margin-bottom:12px}
+.lead{color:var(--mute);max-width:62ch;margin-bottom:36px}
+
+.prices{width:100%;border-collapse:collapse}
+.prices th{text-align:left;font-family:'Sora';font-size:15px;color:var(--mute);font-weight:500;padding:10px 0;border-bottom:2px solid var(--teal)}
+.prices td{padding:18px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.prices td:last-child{text-align:right;font-family:'Sora';font-weight:700;color:var(--teal);white-space:nowrap}
+.prices small{display:block;color:var(--mute);font-size:15px}
+.note{font-size:15px;color:var(--mute);margin-top:16px}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;counter-reset:s}
+.step{padding-top:18px;border-top:3px solid var(--teal)}
+.step h3{font-size:19px;margin-bottom:6px}
+.step h3::before{counter-increment:s;content:counter(s) ". ";color:var(--coral)}
+.step p{color:var(--mute)}
+
+.doc{display:grid;grid-template-columns:200px 1fr;gap:36px;align-items:center;background:var(--sky);border-radius:24px;padding:36px}
+.avatar{width:200px;height:200px;border-radius:50%;background:linear-gradient(140deg,var(--teal),#3FA3B3);display:grid;place-items:center;color:#fff;font-family:'Sora';font-size:56px;font-weight:700}
+.doc p{color:var(--mute);max-width:58ch}
+.doc ul{margin:14px 0 0 18px;color:var(--navy)}
+
+.contact{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.contact h3{font-size:15px;color:var(--mute);font-weight:500;font-family:'Manrope';margin-bottom:4px}
+.contact p{font-size:19px}
+footer{border-top:1px solid var(--line);padding:26px 0;color:var(--mute);font-size:14px}
+
+@media (max-width:820px){
+  .hero-grid,.steps,.contact{grid-template-columns:1fr}
+  .doc{grid-template-columns:1fr;text-align:left}
+  .avatar{width:120px;height:120px;font-size:36px}
+  section{padding:60px 0}
+}
+</style>
+</head>
+<body>
+<div class="demo">Site de démonstration : cabinet fictif, créé comme exemple.</div>
+<div class="wrap nav">
+  <div class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="#0E5E6F" d="M9 3c3 0 4 1.5 7 1.5S20 3 23 3c4 0 6 3 6 7 0 5-2 7-3 13-.6 3.6-1.8 6-3.6 6-2.3 0-2.4-4.7-3-7.4C19 19.8 17.8 19 16 19s-3 .8-3.4 2.6C12 24.3 11.9 29 9.6 29 7.8 29 6.6 26.6 6 23 5 17 3 15 3 10c0-4 2-7 6-7z"/></svg>Cabinet Al Amal</div>
+  <a class="btn" href="#rdv">Prendre rendez-vous</a>
+</div>
+
+<div class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <h1>Des soins dentaires sans mauvaise surprise sur le prix.</h1>
+      <p>Consultation, détartrage, soins des enfants et implants à Rabat Agdal. Chaque tarif est affiché avant le premier rendez-vous.</p>
+      <div class="ctas"><a class="btn" href="#rdv">Prendre rendez-vous</a><a class="btn line" href="#tarifs">Voir les tarifs</a></div>
+    </div>
+    <aside class="status" aria-live="polite">
+      <div class="now"><span class="dot" id="dot"></span><span id="state">Horaires du cabinet</span></div>
+      <div class="next" id="next">&nbsp;</div>
+      <table class="week" id="week"></table>
+      <div class="urgence">Douleur ou dent cassée ? Écrivez « urgence » sur WhatsApp, nous vous rappelons dans la journée.</div>
+    </aside>
+  </div>
+</div>
+
+<section id="tarifs">
+  <div class="wrap">
+    <h2>Nos tarifs</h2>
+    <p class="lead">Prix indicatifs en dirhams. Le devis exact vous est remis après l'examen, avant de commencer tout traitement.</p>
+    <table class="prices">
+      <thead><tr><th>Soin</th><th style="text-align:right">Prix</th></tr></thead>
+      <tbody>
+        <tr><td>Consultation et examen<small>Bilan complet, conseils, devis.</small></td><td>200 DH</td></tr>
+        <tr><td>Détartrage et polissage<small>Recommandé une fois par an.</small></td><td>400 DH</td></tr>
+        <tr><td>Soin de carie (composite)<small>Selon la taille de la carie.</small></td><td>500 – 800 DH</td></tr>
+        <tr><td>Dévitalisation<small>Selon la dent traitée.</small></td><td>1 200 – 2 000 DH</td></tr>
+        <tr><td>Blanchiment au cabinet<small>Une séance d'une heure.</small></td><td>2 500 DH</td></tr>
+        <tr><td>Implant avec couronne<small>Paiement possible en plusieurs fois.</small></td><td>dès 9 000 DH</td></tr>
+      </tbody>
+    </table>
+    <p class="note">Mutuelles acceptées : CNOPS, CNSS (AMO) et principales assurances privées. Feuille de soins remise sur place.</p>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <h2>Votre premier rendez-vous</h2>
+    <p class="lead">Trois étapes, sans attente inutile.</p>
+    <div class="steps">
+      <div class="step"><h3>Écrivez-nous</h3><p>Sur WhatsApp, indiquez votre nom et le motif. Nous vous proposons deux créneaux.</p></div>
+      <div class="step"><h3>Examen et devis</h3><p>Le docteur examine, explique ce qu'il faut faire et vous remet un devis écrit.</p></div>
+      <div class="step"><h3>Soins planifiés</h3><p>Vous choisissez les dates. Un rappel vous est envoyé la veille.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap doc">
+    <div class="avatar" aria-hidden="true">AA</div>
+    <div>
+      <h2>Le cabinet</h2>
+      <p>Une équipe de deux chirurgiens-dentistes et une assistante, dans un cabinet équipé d'un appareil de radiographie numérique et d'une stérilisation conforme aux normes en vigueur.</p>
+      <ul><li>Soins adaptés aux enfants dès 3 ans</li><li>On parle arabe, français et anglais</li><li>Parking à proximité</li></ul>
+    </div>
+  </div>
+</section>
+
+<section id="rdv" style="padding-top:0">
+  <div class="wrap">
+    <h2>Prendre rendez-vous</h2>
+    <div class="contact">
+      <div><h3>Adresse</h3><p>Avenue de France, Agdal<br>Rabat</p></div>
+      <div><h3>Téléphone</h3><p>05 37 00 00 00</p></div>
+      <div><h3>WhatsApp</h3><p><a class="btn" href="#" onclick="return false">Écrire au cabinet</a></p></div>
+    </div>
+  </div>
+</section>
+<footer><div class="wrap">Cabinet dentaire Al Amal, exemple de site réalisé pour une présentation commerciale.</div></footer>
+
+<script>
+(function(){
+  var H={1:[9,13,15,19],2:[9,13,15,19],3:[9,13,15,19],4:[9,13,15,19],5:[9,12,15,19],6:[9,13],0:null};
+  var names=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  var fmt=function(h){return h+' h'};
+  var tb=document.getElementById('week'), now=new Date(), d=now.getDay(), t=now.getHours()+now.getMinutes()/60, rows='';
+  [1,2,3,4,5,6,0].forEach(function(k){
+    var r=H[k], txt=r? (r.length===4? fmt(r[0])+' – '+fmt(r[1])+', '+fmt(r[2])+' – '+fmt(r[3]) : fmt(r[0])+' – '+fmt(r[1])) : 'Fermé';
+    rows+='<tr'+(k===d?' class="today"':'')+'><td>'+names[k]+'</td><td>'+txt+'</td></tr>';
+  });
+  tb.innerHTML=rows;
+  var r=H[d], open=false;
+  if(r){ for(var i=0;i<r.length;i+=2){ if(t>=r[i]&&t<r[i+1]) open=true; } }
+  document.getElementById('dot').className='dot'+(open?' on':'');
+  document.getElementById('state').textContent=open?'Ouvert en ce moment':'Fermé en ce moment';
+  // prochaine ouverture
+  var next='';
+  for(var j=0;j<8&&!next;j++){
+    var dd=(d+j)%7, rr=H[dd]; if(!rr) continue;
+    for(var i2=0;i2<rr.length;i2+=2){
+      if(j>0||rr[i2]>t){ next=(j===0?"Aujourd'hui":j===1?'Demain':names[dd])+' à '+fmt(rr[i2]); break; }
+    }
+  }
+  document.getElementById('next').textContent=open?'Vous pouvez écrire maintenant, réponse rapide.':'Prochaine ouverture : '+next;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+FICHE DE VENTE – À COPIER-COLLER SUR GUMROAD / PAYHIP
+=====================================================
+
+TITRE DU PRODUIT
+Tableau de bord TRS / OEE sur Excel – Suivi de la performance des machines
+
+PRIX CONSEILLÉ POUR LE TEST
+9 $ (environ 90 DH). Si les premières ventes arrivent, passez à 15–19 $.
+
+RÉSUMÉ (une ligne)
+Calculez automatiquement le TRS de vos machines et voyez en un coup d'œil où partent vos minutes de production.
+
+DESCRIPTION
+Vous perdez du temps à calculer le TRS à la main ? Ce fichier Excel le fait pour vous.
+
+Saisissez vos postes de production (temps d'ouverture, arrêts, pièces produites et rebutées) :
+le tableau de bord calcule tout seul la Disponibilité, la Performance, la Qualité et le TRS,
+par machine et pour tout l'atelier.
+
+Ce que vous obtenez :
+• Un tableau de bord avec le TRS global, la disponibilité, la performance et la qualité
+• Le TRS de chaque machine comparé à votre objectif (vert = atteint, rouge = en retard)
+• La répartition des pertes : pannes, réglages, micro-arrêts, écarts de cadence, rebuts
+• Un graphique du TRS jour par jour sur 31 jours
+• Le choix de la période (date de début et de fin) : tout se recalcule
+• Jusqu'à 15 machines et 500 lignes de saisie
+• Des listes déroulantes pour éviter les erreurs de saisie
+• Un mode d'emploi intégré et des données d'exemple pour démarrer en 5 minutes
+
+Formules conformes à la norme NF E60-182 :
+TRS = Disponibilité × Performance × Qualité = Temps utile ÷ Temps d'ouverture
+
+Pour qui ?
+Responsables de production, techniciens méthodes, chefs d'équipe, ingénieurs maintenance
+et étudiants en génie industriel.
+
+Compatibilité
+Microsoft Excel 2010 et versions suivantes (Windows et Mac). Fonctionne aussi avec LibreOffice.
+Aucune macro, aucune installation.
+
+Livraison
+Téléchargement immédiat après l'achat (fichier .xlsx).
+
+MOTS-CLÉS / TAGS
+TRS, OEE, Excel, tableau de bord, production, maintenance, lean, industrie, KPI, performance machine
+
+IMAGE DE COUVERTURE
+Utilisez le fichier « Apercu_tableau_de_bord.png » fourni dans ce dossier.
+
+ÉTAPES POUR PUBLIER (10 minutes)
+1. Créez un compte vendeur gratuit sur gumroad.com ou payhip.com.
+2. Vérifiez dans les paramètres de paiement que vous pouvez recevoir l'argent depuis le Maroc
+   (PayPal ou virement bancaire).
+3. Créez un produit numérique, collez le titre, la description et le prix ci-dessus.
+4. Ajoutez le fichier « Tableau_de_bord_TRS_OEE.xlsx » et l'image d'aperçu.
+5. Publiez, puis partagez le lien dans les groupes LinkedIn et Facebook de production,
+   de maintenance et de génie industriel.

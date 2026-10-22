@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/admin", "destination": "/api/admin" },
+    { "source": "/webhook", "destination": "/api/whatsapp" }
+  ]
+}

@@ -6,6 +6,7 @@
 - **Vercel** — الفريق `team_F7BxKdUFvXI2HkC0v9wrXVO0`. المشاريع: lqta، sites-commerces-maroc، assistant-whatsapp، calcul-trs-mcp، test-claude-alice (تجربة).
 - **Supabase** — المنظمة `evzbgaudsxgvgggklsvd`، المنطقة eu-west-3. المشاريع: `lqta` (npfidgwfnyccijfbgekb)، `assistant-whatsapp` (eahdciqzdmjfaakzsfml).
 - **موصلات أخرى:** Netlify، Render، Google Drive، calcul-trs (موصل MCP خاص).
+- **GitHub:** الحساب `mohcineoffice-create`، والمستودع الخاص `projets-alice` يضم كل المشاريع (الفرع main). تطبيق Claude مثبّت بصلاحية على هذا المستودع فقط. أضِف إليه كل مشروع جديد، ولا تضع فيه أي سر.
 - **الحاسوب:** Windows، اسمه «pc». المجلدات الموصولة: Desktop، Documents، Downloads.
 - **الأسرار** (رموز، مفاتيح): لا تُكتب هنا أبدًا. توجد في متغيرات البيئة على Vercel، وفي `Desktop\Kit freelance sites\3_Assistant_WhatsApp_Guide.txt` على حاسوبه.
 

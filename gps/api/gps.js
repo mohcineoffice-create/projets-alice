@@ -42,6 +42,16 @@ const CATEGORIES = {
   tout_commerce: ['["shop"]', '["amenity"~"^(restaurant|cafe|fast_food|pharmacy|dentist|doctors|clinic)$"]', '["craft"]', '["office"]']
 };
 
+// Mots-clés Nominatim (repli si Overpass est indisponible)
+const MOTS_NOMINATIM = {
+  restaurant: ["restaurant"], cafe: ["cafe"], fast_food: ["fast food"], boulangerie: ["bakery"],
+  pharmacie: ["pharmacy"], medecin: ["doctors"], dentiste: ["dentist"], clinique: ["clinic"],
+  coiffeur: ["hairdresser"], beaute: ["beauty shop"], salle_sport: ["fitness centre"], hotel: ["hotel"],
+  garage: ["car repair"], supermarche: ["supermarket"], vetements: ["clothes shop"],
+  ecole_privee: ["language school", "driving school"], usine: ["factory"],
+  tout_commerce: ["restaurant", "cafe", "pharmacy", "hairdresser", "bakery", "supermarket"]
+};
+
 const TOOLS = [
   {
     name: "geocoder",
@@ -235,7 +245,7 @@ async function chercherLieux(a) {
   const filtres = CATEGORIES[a.categorie];
   if (!filtres) throw new ErreurOutil("« categorie » inconnue. Choix : " + Object.keys(CATEGORIES).join(", "));
   const limite = Math.round(nombre(a.limite, "limite", 1, 200, 50));
-  let zone, description;
+  let zone, description, bbox = null;
   if (a.centre) {
     const c = coordonnees(a.centre);
     if (!c) throw new ErreurOutil("« centre » doit être de la forme « lat,lon ».");
@@ -249,6 +259,7 @@ async function chercherLieux(a) {
     const [s, n, w, e] = r[0].boundingbox.map(Number);
     if ((n - s) * (e - w) > 1.0) throw new ErreurOutil("Zone trop grande : précisez une ville ou un quartier.");
     zone = `(${s},${w},${n},${e})`;
+    bbox = { s, w, n, e };
     description = r[0].display_name;
   }
   const corps = filtres.map((f) => `nwr${f}${zone};`).join("");
@@ -263,7 +274,30 @@ async function chercherLieux(a) {
       return j;
     }));
   } catch (e) {
-    throw new ErreurOutil("Les serveurs de recherche OpenStreetMap sont surchargés en ce moment. Réessayez dans quelques minutes.");
+    r = null;
+  }
+  let sourceDonnees = "Overpass";
+  if (!r) {
+    // Repli : recherche Nominatim par mot-clé dans la zone (moins complète, 50 résultats par mot-clé max).
+    if (!bbox) throw new ErreurOutil("Les serveurs de recherche OpenStreetMap sont surchargés. Réessayez avec « ville » plutôt que « centre », ou dans quelques minutes.");
+    sourceDonnees = "Nominatim (repli)";
+    const elements = [];
+    for (const mot of MOTS_NOMINATIM[a.categorie]) {
+      const viewbox = `${bbox.w},${bbox.n},${bbox.e},${bbox.s}`;
+      const res = await nominatim(`/search?format=jsonv2&limit=50&extratags=1&addressdetails=1&bounded=1&viewbox=${viewbox}&q=${encodeURIComponent(mot)}`);
+      for (const x of res) {
+        const ad = x.address || {};
+        elements.push({
+          lat: Number(x.lat), lon: Number(x.lon),
+          tags: {
+            name: x.name || null, ...(x.extratags || {}),
+            amenity: x.category === "amenity" ? x.type : undefined, shop: x.category === "shop" ? x.type : undefined,
+            "addr:housenumber": ad.house_number, "addr:street": ad.road, "addr:suburb": ad.suburb || ad.neighbourhood, "addr:city": ad.city || ad.town
+          }
+        });
+      }
+    }
+    r = { elements };
   }
 
   let lieux = (r.elements || []).map((el) => {
@@ -300,7 +334,7 @@ async function chercherLieux(a) {
   return [{
     type: "text",
     text: JSON.stringify({
-      zone: description, categorie: a.categorie,
+      zone: description, categorie: a.categorie, source_donnees: sourceDonnees,
       total_trouves: total, sans_site_web_connu: sansSite, renvoyes: lieux.length,
       lien_carte: lieux.length ? lienCarte(lieux) : null,
       lieux,

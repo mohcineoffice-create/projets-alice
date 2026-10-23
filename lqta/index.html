@@ -128,6 +128,19 @@ h1{font-size:24px;line-height:1.2}
 .tabs button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .card{border:1px solid var(--line);border-radius:18px;padding:18px}
 .more{display:flex;justify-content:center;margin:6px 0 20px}
+.badge{position:absolute;top:2px;right:calc(50% - 22px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--heart);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
+.tnav a{position:relative}.tnav .badge{top:2px;right:2px}
+.bnav a{position:relative}
+.sform{display:flex;gap:8px;margin-bottom:14px}.sform input{flex:1}
+.ulist a{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line)}
+.ulist b{display:block}.ulist small{color:var(--mute)}
+.notif{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;margin-bottom:8px;background:var(--surface)}
+.notif.new{background:var(--blue-2)}
+.notif .t{flex:1;min-width:0}.notif .t small{display:block;color:var(--mute);font-size:12px}
+.notif img.th{width:46px;height:46px;border-radius:8px;object-fit:cover;flex:none}
+.post .acts .sp{flex:1}
+.post .acts .saved{color:var(--blue)}.post .acts .saved svg{fill:var(--blue)}
+.cap .hl{font-weight:600;color:var(--blue);margin:0}
 @media (prefers-reduced-motion:no-preference){.likepop{animation:pop .3s ease}@keyframes pop{50%{transform:scale(1.25)}}}
 </style>
 </head>
@@ -151,6 +164,7 @@ const REASONS = [["spam","Spam ou arnaque"],["violence","Violence"],["nudite","N
 const PAGE = 15;
 
 let me = null;       // { id, username, ... }
+let mySaved = new Set(); let unread = 0;
 const app = document.getElementById("app");
 
 /* ---------- utilitaires ---------- */
@@ -178,24 +192,26 @@ const ICON = {
   heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7.5-4.6-9.5-9.3C1 8 3.3 4.5 7 4.5c2 0 3.6 1.1 5 3 1.4-1.9 3-3 5-3 3.7 0 6 3.5 4.5 7.2C19.5 16.4 12 21 12 21z"/></svg>',
   cmt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.6A8 8 0 1 1 21 12z"/></svg>',
   dots:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+  bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 7H4c0-1 2-2 2-7z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>',
+  mark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg>'
 };
 
 function nav(){
   const r = location.hash || "#/";
-  const items = me ? [["#/","Fil",ICON.home],["#/decouvrir","Découvrir",ICON.disc],["#/publier","Publier",ICON.plus,"pub"],["#/u/"+me.username,"Profil",ICON.user]]
+  const items = me ? [["#/","Fil",ICON.home],["#/decouvrir","Découvrir",ICON.disc],["#/publier","Publier",ICON.plus,"pub"],["#/notifications","Notifs",ICON.bell,"nt"],["#/u/"+me.username,"Profil",ICON.user]]
                    : [["#/decouvrir","Découvrir",ICON.disc],["#/connexion","Se connecter",ICON.user]];
   const on = (h) => (h === "#/" ? r === "#/" || r === "" : r.startsWith(h));
-  document.getElementById("tnav").innerHTML = items.map(([h,t]) => `<a href="${h}" class="${on(h)?"on":""}">${t}</a>`).join("") + (me ? `<a href="#" id="logout">Déconnexion</a>` : "");
+  document.getElementById("tnav").innerHTML = items.map(([h,t,ic,c]) => `<a href="${h}" class="${on(h)?"on":""}">${t}${c==="nt"&&unread?`<span class="badge" aria-label="${unread} non lues">${unread>9?"9+":unread}</span>`:""}</a>`).join("") + (me ? `<a href="#" id="logout">Déconnexion</a>` : "");
   document.getElementById("bnav").innerHTML = `<div class="in" style="grid-template-columns:repeat(${items.length},1fr)">` +
-    items.map(([h,t,ic,c]) => `<a href="${h}" class="${on(h)?"on":""} ${c||""}"><span class="ic">${ic}</span>${t}</a>`).join("") + `</div>`;
+    items.map(([h,t,ic,c]) => `<a href="${h}" class="${on(h)?"on":""} ${c||""}"><span class="ic">${ic}</span>${t}${c==="nt"&&unread?`<span class="badge" aria-label="${unread} non lues">${unread>9?"9+":unread}</span>`:""}</a>`).join("") + `</div>`;
   const lo = document.getElementById("logout");
   if (lo) lo.onclick = async (e) => { e.preventDefault(); await sb.auth.signOut(); };
 }
 
 /* ---------- carte de post ---------- */
 function postCard(p, liked, opts = {}){
-  const mine = me && p.user_id === me.id;
+  const mine = me && p.user_id === me.id; const saved = me && mySaved.has(p.id);
   return `<article class="post" data-id="${p.id}">
     <header>
       <a href="#/u/${esc(p.username)}">${avatar(p)}</a>
@@ -207,12 +223,22 @@ function postCard(p, liked, opts = {}){
     <div class="acts">
       <button data-like class="${liked?"liked":""}" aria-pressed="${liked?"true":"false"}" aria-label="J'aime">${ICON.heart}<span>${p.like_count}</span></button>
       <a href="#/p/${p.id}" aria-label="Commentaires">${ICON.cmt}<span>${p.comment_count}</span></a>
+      <span class="sp"></span>
+      ${me ? `<button data-save class="${saved?"saved":""}" aria-pressed="${saved?"true":"false"}" aria-label="Enregistrer">${ICON.mark}</button>` : ""}
     </div>
-    ${p.caption ? `<p class="cap"><a href="#/u/${esc(p.username)}">${esc(p.username)}</a>${esc(p.caption)}</p>` : `<div style="height:10px"></div>`}
+    ${p.caption ? `<p class="cap"><a href="#/u/${esc(p.username)}">${esc(p.username)}</a>${tagLinks(p.caption)}</p>` : `<div style="height:10px"></div>`}
     ${opts.after || ""}
   </article>`;
 }
 
+function tagLinks(t){
+  return esc(t).replace(/#([\p{L}\p{N}_]{2,40})/gu, (m, w) => `<a class="hl" href="#/recherche?q=${encodeURIComponent("#" + w)}">${m}</a>`);
+}
+async function refreshUnread(){
+  if (!me) { unread = 0; return; }
+  const { count } = await sb.from("notifications").select("id", { count:"exact", head:true }).eq("user_id", me.id).eq("read", false);
+  const n = count || 0; if (n !== unread) { unread = n; nav(); }
+}
 function bindPosts(root){
   root.querySelectorAll(".post").forEach(el => {
     const id = Number(el.dataset.id);
@@ -225,6 +251,14 @@ function bindPosts(root){
       const { error } = on ? await sb.from("likes").insert({ user_id: me.id, post_id: id })
                            : await sb.from("likes").delete().eq("user_id", me.id).eq("post_id", id);
       if (error) { lb.classList.toggle("liked"); n.textContent = Number(n.textContent) + (on ? -1 : 1); }
+    };
+    const sv = el.querySelector("[data-save]");
+    if (sv) sv.onclick = async () => {
+      const on = sv.classList.toggle("saved"); sv.setAttribute("aria-pressed", on);
+      on ? mySaved.add(id) : mySaved.delete(id);
+      const { error } = on ? await sb.from("saved_posts").insert({ user_id: me.id, post_id: id })
+                           : await sb.from("saved_posts").delete().eq("user_id", me.id).eq("post_id", id);
+      if (error) { sv.classList.toggle("saved"); on ? mySaved.delete(id) : mySaved.add(id); }
     };
     const mb = el.querySelector("[data-menu]");
     if (mb) mb.onclick = (e) => {
@@ -299,8 +333,10 @@ async function pageFeed(){
 async function pageDiscover(){
   const cat = new URLSearchParams(location.hash.split("?")[1] || "").get("c") || "";
   app.innerHTML = `<h1>Découvrir</h1><p class="lead">Les dernières publications de tout le monde, par ordre d'arrivée. Choisissez un thème pour filtrer.</p>
+    <form class="sform" id="sf" role="search"><label class="sr" for="sq">Rechercher</label><input id="sq" type="search" placeholder="Rechercher un compte, un mot ou un #thème" maxlength="60"><button class="btn">Chercher</button></form>
     <div class="chips" role="tablist">${[["","Tout"],...CATS].map(([k,t]) => `<button role="tab" aria-selected="${k===cat}" class="${k===cat?"on":""}" data-c="${k}">${t}</button>`).join("")}</div>
     <div class="grid" id="grid"></div><div class="more" id="more"></div>`;
+  document.getElementById("sf").onsubmit = (e) => { e.preventDefault(); const v = document.getElementById("sq").value.trim(); if (v) location.hash = "#/recherche?q=" + encodeURIComponent(v); };
   app.querySelectorAll(".chips button").forEach(b => b.onclick = () => location.hash = "#/decouvrir" + (b.dataset.c ? "?c=" + b.dataset.c : ""));
   let page = 0; const grid = document.getElementById("grid"), more = document.getElementById("more");
   async function load(){
@@ -356,7 +392,7 @@ async function pageProfile(username){
       <div class="stats"><div><b>${nPosts||0}</b><span>publications</span></div><div><b id="nf">${nFollowers||0}</b><span>abonnés</span></div><div><b>${nFollowing||0}</b><span>abonnements</span></div></div></div></section>
     ${u.bio ? `<p class="bio">${esc(u.bio)}</p>` : ""}
     <div style="display:flex;gap:8px;margin-bottom:18px">
-      ${mine ? `<a class="btn ghost" href="#/modifier">Modifier le profil</a><a class="btn ghost" href="#" id="lo2">Se déconnecter</a>`
+      ${mine ? `<a class="btn ghost" href="#/modifier">Modifier le profil</a><a class="btn ghost" href="#/enregistres">Enregistrés</a><a class="btn ghost" href="#" id="lo2">Se déconnecter</a>`
              : me ? `<button class="btn ${following?"ghost":""}" id="fb">${following?"Abonné":"Suivre"}</button>` : `<a class="btn" href="#/connexion">Se connecter pour suivre</a>`}
     </div>
     ${(posts||[]).length ? `<div class="grid">${posts.map(p => `<a href="#/p/${p.id}"><img src="${esc(photoUrl(p.image_path))}" alt="" loading="lazy">${p.hidden?`<span class="flag">Masquée</span>`:""}</a>`).join("")}</div>`
@@ -517,6 +553,58 @@ function pageNewPassword(){
   };
 }
 
+/* ---------- recherche, notifications, enregistrés ---------- */
+const likeEsc = (q) => q.replace(/[\\%_]/g, c => "\\" + c);
+async function pageSearch(){
+  const q = (new URLSearchParams(location.hash.split("?")[1] || "").get("q") || "").trim().slice(0, 60);
+  app.innerHTML = `<h1>Recherche</h1>
+    <form class="sform" id="sf" role="search"><label class="sr" for="sq">Rechercher</label><input id="sq" type="search" value="${esc(q)}" placeholder="Compte, mot ou #thème" maxlength="60"><button class="btn">Chercher</button></form><div id="res"></div>`;
+  document.getElementById("sf").onsubmit = (e) => { e.preventDefault(); const v = document.getElementById("sq").value.trim(); location.hash = "#/recherche" + (v ? "?q=" + encodeURIComponent(v) : ""); };
+  const res = document.getElementById("res");
+  if (q.length < 2) { res.innerHTML = `<p class="lead">Écrivez au moins 2 caractères.</p>`; return; }
+  const pat = "%" + likeEsc(q) + "%";
+  const [u1, u2, ps] = await Promise.all([
+    sb.from("profiles").select("id,username,full_name,avatar_url").ilike("username", pat).limit(10),
+    sb.from("profiles").select("id,username,full_name,avatar_url").ilike("full_name", pat).limit(10),
+    sb.from("posts_feed").select("id,image_path,username").eq("hidden", false).ilike("caption", pat).order("created_at", { ascending:false }).limit(30)
+  ]);
+  const seen = new Set(); const users = [...(u1.data||[]), ...(u2.data||[])].filter(u => !seen.has(u.id) && seen.add(u.id)).slice(0, 10);
+  const posts = ps.data || [];
+  if (!users.length && !posts.length) { res.innerHTML = `<div class="empty"><b>Aucun résultat pour « ${esc(q)} ».</b>Essayez un autre mot.</div>`; return; }
+  res.innerHTML = (users.length ? `<h2 style="font-size:18px;margin:6px 0">Comptes</h2><div class="ulist">${users.map(u => `<a href="#/u/${esc(u.username)}">${avatar(u)}<span><b>${esc(u.full_name || u.username)}</b><small>@${esc(u.username)}</small></span></a>`).join("")}</div>` : "")
+    + (posts.length ? `<h2 style="font-size:18px;margin:16px 0 8px">Publications</h2><div class="grid">${posts.map(p => `<a href="#/p/${p.id}"><img src="${esc(photoUrl(p.image_path))}" alt="Photo de ${esc(p.username)}" loading="lazy"></a>`).join("")}</div>` : "");
+}
+
+async function pageNotifs(){
+  if (!me) return (location.hash = "#/connexion");
+  app.innerHTML = `<h1>Notifications</h1><p class="lead">Ce qui s'est passé autour de vos publications.</p><div id="nl"><p class="lead">Chargement…</p></div>`;
+  const { data, error } = await sb.from("notifications").select("id,type,post_id,read,created_at,actor:profiles!notifications_actor_id_fkey(username,avatar_url,full_name),post:posts(image_path)")
+    .eq("user_id", me.id).order("created_at", { ascending:false }).limit(50);
+  const nl = document.getElementById("nl");
+  if (error) { nl.innerHTML = `<p class="err">${esc(error.message)}</p>`; return; }
+  if (!data.length) { nl.innerHTML = `<div class="empty"><b>Rien pour l'instant.</b>Vous serez prévenu(e) des mentions J'aime, des commentaires et des nouveaux abonnés.</div>`; return; }
+  const TXT = { like: "a aimé votre publication", comment: "a commenté votre publication", follow: "s'est abonné(e) à votre compte" };
+  nl.innerHTML = data.map(n => {
+    const a = n.actor || { username: "?" };
+    const href = n.post_id ? `#/p/${n.post_id}` : `#/u/${esc(a.username)}`;
+    return `<a class="notif ${n.read ? "" : "new"}" href="${href}">${avatar(a)}<span class="t"><b>${esc(a.username)}</b> ${TXT[n.type] || ""}<small>${ago(n.created_at)}</small></span>${n.post && n.post.image_path ? `<img class="th" src="${esc(photoUrl(n.post.image_path))}" alt="">` : ""}</a>`;
+  }).join("");
+  if (data.some(n => !n.read)) { await sb.from("notifications").update({ read: true }).eq("user_id", me.id).eq("read", false); unread = 0; nav(); }
+}
+
+async function pageSaved(){
+  if (!me) return (location.hash = "#/connexion");
+  app.innerHTML = `<h1>Enregistrés</h1><p class="lead">Les publications que vous avez gardées. Vous seul(e) les voyez.</p><div id="sl"></div>`;
+  const { data, error } = await sb.from("saved_posts").select("post_id,created_at").eq("user_id", me.id).order("created_at", { ascending:false }).limit(60);
+  const sl = document.getElementById("sl");
+  if (error) { sl.innerHTML = `<p class="err">${esc(error.message)}</p>`; return; }
+  if (!data.length) { sl.innerHTML = `<div class="empty"><b>Rien d'enregistré.</b>Touchez le marque-page sous une publication pour la retrouver ici.<br><a class="btn" href="#/decouvrir">Découvrir</a></div>`; return; }
+  const { data: ps } = await sb.from("posts_feed").select("id,image_path,username").in("id", data.map(d => d.post_id)).eq("hidden", false);
+  const by = new Map((ps || []).map(p => [p.id, p]));
+  const list = data.map(d => by.get(d.post_id)).filter(Boolean);
+  sl.innerHTML = list.length ? `<div class="grid">${list.map(p => `<a href="#/p/${p.id}"><img src="${esc(photoUrl(p.image_path))}" alt="Photo de ${esc(p.username)}" loading="lazy"></a>`).join("")}</div>` : `<div class="empty"><b>Ces publications ne sont plus disponibles.</b></div>`;
+}
+
 /* ---------- routeur ---------- */
 async function route(){
   nav(); window.scrollTo(0, 0);
@@ -529,16 +617,23 @@ async function route(){
   if (h === "#/publier") return pagePublish();
   if (h === "#/modifier") return pageEdit();
   if (h === "#/connexion") return pageAuth();
+  if (h === "#/recherche") return pageSearch();
+  if (h === "#/notifications") return pageNotifs();
+  if (h === "#/enregistres") return pageSaved();
   if ((m = h.match(/^#\/p\/(\d+)$/))) return pagePost(Number(m[1]));
   if ((m = h.match(/^#\/u\/([a-z0-9_.]+)$/))) return pageProfile(m[1]);
   app.innerHTML = `<div class="empty"><b>Page introuvable.</b><a class="btn" href="#/">Retour à l'accueil</a></div>`;
 }
 
 async function loadMe(session){
-  if (!session) { me = null; return; }
+  if (!session) { me = null; mySaved = new Set(); unread = 0; return; }
   const { data } = await sb.from("profiles").select("*").eq("id", session.user.id).maybeSingle();
   me = data || { id: session.user.id, username: "moi" };
+  const { data: sv } = await sb.from("saved_posts").select("post_id").eq("user_id", me.id).limit(1000);
+  mySaved = new Set((sv || []).map(r => r.post_id));
+  refreshUnread();
 }
+setInterval(() => { if (me && !document.hidden) refreshUnread(); }, 60000);
 let booted = false;
 // Ne pas appeler Supabase directement dans le callback (verrou d'auth) : on diffère.
 sb.auth.onAuthStateChange((ev, session) => {

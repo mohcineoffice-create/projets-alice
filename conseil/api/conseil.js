@@ -9,7 +9,7 @@ const PROTOCOL_VERSIONS = ["2025-06-18", "2025-03-26", "2024-11-05"];
 const API = "https://generativelanguage.googleapis.com/v1beta";
 const MAX_MESSAGE = 8000;
 const MAX_TOURS = 8;
-const MODELE_DEFAUT = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const MODELE_DEFAUT = process.env.GEMINI_MODEL || "gemini-3.8-flash";
 
 const CONSIGNE =
   "Tu participes à une discussion critique avec un autre assistant IA pour aider une personne à prendre une bonne décision. " +

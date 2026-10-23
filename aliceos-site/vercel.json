@@ -1,0 +1,16 @@
+{
+  "headers": [
+    {
+      "source": "/aliceos-3.0.iso",
+      "headers": [
+        { "key": "Content-Type", "value": "application/x-iso9660-image" },
+        { "key": "Content-Disposition", "value": "attachment; filename=\"aliceos-3.0.iso\"" },
+        { "key": "Cache-Control", "value": "public, max-age=86400" }
+      ]
+    },
+    {
+      "source": "/aliceos-3.0.iso.sha256",
+      "headers": [{ "key": "Content-Type", "value": "text/plain; charset=utf-8" }]
+    }
+  ]
+}

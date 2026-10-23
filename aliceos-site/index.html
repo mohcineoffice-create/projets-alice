@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AliceOS 3.0 — a desktop operating system written from scratch</title>
+<meta name="description" content="Download AliceOS 3.0, a free graphical operating system written from scratch in C and x86 assembly. Try it in VirtualBox in five minutes.">
+<meta property="og:title" content="AliceOS 3.0 — written from scratch">
+<meta property="og:description" content="The ease of Windows and the power of Linux, in a tiny operating system built from zero. Free ISO, runs in VirtualBox.">
+<meta property="og:image" content="/img/og.jpg">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%2300d2ff'/%3E%3Cstop offset='1' stop-color='%23aa3cff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='32' fill='url(%23g)'/%3E%3Cpath d='M19 47 32 15l13 32M24.5 36h15' stroke='white' stroke-width='5.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0b1e; --bg2:#141130; --card:#1b1740; --line:#2e2862; --text:#ecebf7; --sub:#a9a5c9;
+  --accent:#7c5cff; --accent2:#00c8ff; --ok:#3ddc97; --warn:#ffb648;
+  --radius:16px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow-x:hidden}
+a{color:var(--accent2);text-decoration:none} a:hover{text-decoration:underline}
+img,video{max-width:100%;display:block}
+code,kbd,.mono{font-family:"JetBrains Mono",ui-monospace,Consolas,monospace}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+/* nav */
+nav{position:sticky;top:0;z-index:10;background:rgba(13,11,30,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:24px;height:62px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;color:var(--text)}
+.brand:hover{text-decoration:none}
+.logo{width:30px;height:30px;flex:none}
+nav .links{display:flex;gap:22px;margin-left:auto;font-size:15px}
+nav .links a{color:var(--sub)} nav .links a:hover{color:var(--text);text-decoration:none}
+@media(max-width:640px){nav .links a.hide-sm{display:none}}
+
+/* hero */
+.hero{position:relative;padding:72px 0 40px;text-align:center;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:-200px -100px auto;height:640px;background:
+  radial-gradient(600px 300px at 30% 30%,rgba(124,92,255,.35),transparent 70%),
+  radial-gradient(500px 280px at 75% 20%,rgba(0,200,255,.22),transparent 70%);pointer-events:none}
+.pill{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--line);background:var(--bg2);padding:6px 14px;border-radius:999px;font-size:13px;color:var(--sub)}
+.pill b{color:var(--ok);font-weight:600}
+h1{position:relative;font-size:clamp(36px,6vw,64px);line-height:1.05;margin:20px 0 14px;letter-spacing:-.02em;font-weight:800}
+h1 span{background:linear-gradient(90deg,#00d2ff,#aa3cff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{position:relative;max-width:680px;margin:0 auto;color:var(--sub);font-size:clamp(16px,2.2vw,19px)}
+.cta{position:relative;display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:30px 0 12px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;border-radius:12px;font-weight:600;font-size:16px;border:1px solid var(--line);color:var(--text);background:var(--bg2)}
+.btn:hover{text-decoration:none;border-color:#5a52a8}
+.btn.primary{background:linear-gradient(135deg,#7c5cff,#5b8cff);border:0;box-shadow:0 10px 30px rgba(124,92,255,.35)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn small{font-weight:500;opacity:.8}
+.meta{position:relative;color:var(--sub);font-size:13px}
+.shot{position:relative;margin:44px auto 0;max-width:980px;border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.55)}
+
+section{padding:64px 0}
+h2{font-size:clamp(26px,3.6vw,36px);margin:0 0 10px;letter-spacing:-.01em}
+.sec-sub{color:var(--sub);margin:0 0 32px;max-width:720px}
+
+/* features */
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.grid{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
+.card h3{margin:0 0 6px;font-size:17px}
+.card p{margin:0;color:var(--sub);font-size:15px}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;margin-bottom:10px}
+.tag.win{background:rgba(0,200,255,.14);color:#6fdcff}
+.tag.lin{background:rgba(61,220,151,.14);color:#6ee8b1}
+.tag.ker{background:rgba(124,92,255,.18);color:#b7a6ff}
+
+/* gallery */
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media(max-width:800px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.gallery figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.gallery figcaption{padding:10px 14px;font-size:14px;color:var(--sub)}
+video{width:100%;border-radius:14px;border:1px solid var(--line);background:#000}
+
+/* install */
+.install{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px;align-items:start}
+@media(max-width:900px){.install{grid-template-columns:minmax(0,1fr)}}
+ol.steps{list-style:none;counter-reset:s;margin:0;padding:0}
+ol.steps>li{counter-increment:s;position:relative;padding:0 0 22px 52px}
+ol.steps>li:before{content:counter(s);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:var(--accent);color:#fff}
+ol.steps>li:not(:last-child):after{content:"";position:absolute;left:16px;top:38px;bottom:4px;width:2px;background:var(--line)}
+ol.steps h3{margin:4px 0 4px;font-size:17px}
+ol.steps p{margin:0 0 6px;color:var(--sub)}
+.kv{width:100%;border-collapse:collapse;font-size:15px}
+.kv td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.kv td:first-child{color:var(--sub);white-space:nowrap}
+.side{position:sticky;top:80px}
+.note{border-left:3px solid var(--warn);background:rgba(255,182,72,.08);padding:12px 14px;border-radius:0 10px 10px 0;color:#f3dcb5;font-size:15px;margin:12px 0}
+.note.ok{border-color:var(--ok);background:rgba(61,220,151,.08);color:#c9f3df}
+kbd{background:#2a2556;border:1px solid #433c86;border-bottom-width:2px;border-radius:6px;padding:1px 7px;font-size:13px}
+pre{background:#0a0918;border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:14px;margin:8px 0 0}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media(max-width:700px){.two{grid-template-columns:minmax(0,1fr)}}
+.hash{font-size:13px}.hash code{white-space:pre-wrap;word-break:break-all}
+
+/* faq */
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:600}
+details p{color:var(--sub);margin:10px 0 0}
+
+footer{border-top:1px solid var(--line);padding:30px 0 50px;color:var(--sub);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00d2ff"/><stop offset="1" stop-color="#aa3cff"/></linearGradient></defs><circle cx="32" cy="32" r="32" fill="url(#lg)"/><path d="M19 47 32 15l13 32M24.5 36h15" stroke="#fff" stroke-width="5.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      AliceOS
+    </a>
+    <div class="links">
+      <a class="hide-sm" href="#features">Features</a>
+      <a class="hide-sm" href="#screens">Screenshots</a>
+      <a href="#install">Install</a>
+      <a class="hide-sm" href="#faq">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <span class="pill"><b>&#9679; Free download</b> Version 3.0 &middot; 23 October 2026</span>
+    <h1>An operating system<br><span>written from scratch</span></h1>
+    <p class="lead">AliceOS is a small desktop operating system with its own kernel, drivers, window manager and apps. It takes the ease of Windows and the power of Linux &mdash; and it boots in two seconds.</p>
+    <div class="cta">
+      <a class="btn primary" href="/aliceos-3.0.iso" download>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>
+        Download ISO <small>14.5 MB</small>
+      </a>
+      <a class="btn" href="#install">Try it in VirtualBox</a>
+    </div>
+    <p class="meta">32-bit x86 &middot; boots on BIOS and UEFI &middot; no installation on your computer needed</p>
+    <div class="shot"><img src="/img/hero.jpg" width="1024" height="768" alt="AliceOS desktop with a Linux-style terminal and a file explorer side by side, in dark mode"></div>
+  </div>
+</header>
+
+<section id="features">
+  <div class="wrap">
+    <h2>The best of two worlds</h2>
+    <p class="sec-sub">Every line of AliceOS &mdash; about 4,500 of them in C and assembly &mdash; was written for this project. No Linux kernel, no libraries.</p>
+    <div class="grid">
+      <div class="card"><span class="tag win">Like Windows</span><h3>Desktop and windows</h3><p>Taskbar, start menu, notifications. Move, resize and maximise windows, or drag them to an edge to snap them side by side. Alt+Tab switches between apps.</p></div>
+      <div class="card"><span class="tag win">Like Windows</span><h3>File explorer</h3><p>Browse folders, create, rename and delete files, right-click menus, and double-click to open a file in the right app.</p></div>
+      <div class="card"><span class="tag win">Like Windows</span><h3>Task Manager and Settings</h3><p>Live CPU and memory graphs with End task. Four wallpapers, light and dark themes, six accent colours and a time zone setting.</p></div>
+      <div class="card"><span class="tag lin">Like Linux</span><h3>A real shell</h3><p><code>ls -l</code>, <code>cd</code>, <code>mkdir</code>, <code>cat</code>, <code>rm -r</code>, <code>mv</code>, <code>cp</code>, <code>tree</code>, redirection with <code>&gt;</code> and <code>&gt;&gt;</code>, Tab completion and history.</p></div>
+      <div class="card"><span class="tag lin">Like Linux</span><h3>A familiar file tree</h3><p><code>/bin</code>, <code>/etc</code>, <code>/home/alice</code> and <code>/tmp</code>. System folders belong to root and are read-only; <code>ps</code>, <code>kill</code>, <code>free</code> and <code>df</code> show what is running.</p></div>
+      <div class="card"><span class="tag ker">Built in</span><h3>Nine apps</h3><p>Files, Terminal, Notes, Paint, Calculator, Snake, Task Manager, Settings and About. Notes and Paint save your work as files.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="screens" style="padding-top:20px">
+  <div class="wrap">
+    <h2>See it running</h2>
+    <p class="sec-sub">A real recording of AliceOS, not a mock-up.</p>
+    <video src="/demo.mp4" poster="/img/poster.jpg" controls preload="none" playsinline width="1024" height="768"></video>
+    <div class="gallery" style="margin-top:16px">
+      <figure><img loading="lazy" src="/img/start-menu.jpg" alt="Start menu"><figcaption>Start menu</figcaption></figure>
+      <figure><img loading="lazy" src="/img/settings.jpg" alt="Settings in dark mode"><figcaption>Settings: wallpapers, dark mode, accent colours</figcaption></figure>
+      <figure><img loading="lazy" src="/img/task-manager.jpg" alt="Task Manager"><figcaption>Task Manager with live graphs</figcaption></figure>
+      <figure><img loading="lazy" src="/img/terminal.jpg" alt="Terminal running Linux-style commands"><figcaption>Terminal with Linux-style commands</figcaption></figure>
+      <figure><img loading="lazy" src="/img/files.jpg" alt="File explorer and desktop menu"><figcaption>File explorer and right-click menu</figcaption></figure>
+      <figure><img loading="lazy" src="/img/snap.jpg" alt="Two windows snapped side by side"><figcaption>Windows snapped side by side</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <h2>Try it in VirtualBox</h2>
+    <p class="sec-sub">VirtualBox runs AliceOS in a window, safely, without touching your computer. It takes about five minutes and is completely free.</p>
+    <div class="install">
+      <ol class="steps">
+        <li><h3>Install VirtualBox</h3><p>Download it free from <a href="https://www.virtualbox.org/wiki/Downloads" rel="noopener">virtualbox.org</a> for Windows, Linux or an Intel Mac, and install it.</p></li>
+        <li><h3>Download AliceOS</h3><p><a href="/aliceos-3.0.iso" download>aliceos-3.0.iso</a> (14.5 MB). There is nothing to unzip: the ISO is the whole system.</p></li>
+        <li><h3>Create a virtual machine</h3><p>In VirtualBox click <b>New</b>. Name it <b>AliceOS</b>, choose the ISO you downloaded, then set <b>Type: Other</b> and <b>Version: Other/Unknown</b>. If VirtualBox mentions unattended installation, ignore it: AliceOS needs no installation.</p></li>
+        <li><h3>Memory and processor</h3><p>Set <b>Base Memory</b> to <b>256 MB</b> (512 MB is fine too) and keep <b>1 CPU</b>.</p></li>
+        <li><h3>No hard disk</h3><p>Choose <b>Do Not Add a Virtual Hard Disk</b> and confirm. AliceOS runs entirely from the ISO and memory.</p></li>
+        <li><h3>Check two settings (optional)</h3><p>In <b>Settings &rarr; System</b>, the pointing device should be <b>PS/2 Mouse</b>. In <b>Settings &rarr; Display</b>, keep the default graphics controller and at least <b>16 MB</b> of video memory.</p></li>
+        <li><h3>Start</h3><p>Click <b>Start</b>. AliceOS boots in a couple of seconds. Click inside the window to use the mouse; press the <b>Host key</b> (<kbd>Right Ctrl</kbd> on Windows and Linux, <kbd>Left &#8984;</kbd> on Mac) to give the mouse back to your computer.</p></li>
+      </ol>
+      <aside class="side">
+        <div class="card">
+          <h3 style="margin-top:0">Recommended settings</h3>
+          <table class="kv">
+            <tr><td>Type / Version</td><td>Other / Other/Unknown</td></tr>
+            <tr><td>Memory</td><td>256 MB or more</td></tr>
+            <tr><td>Processors</td><td>1</td></tr>
+            <tr><td>Hard disk</td><td>None</td></tr>
+            <tr><td>Pointing device</td><td>PS/2 Mouse</td></tr>
+            <tr><td>Video memory</td><td>16 MB or more</td></tr>
+            <tr><td>EFI</td><td>Off or on &mdash; both work</td></tr>
+          </table>
+          <div class="note ok">To turn it off, use <b>Start &rarr; Shut down</b> inside AliceOS.</div>
+          <div class="note">Your files live in memory and disappear when AliceOS shuts down. Saving to disk is planned for a future version.</div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="two" style="margin-top:28px">
+      <div class="card">
+        <h3>Other ways to run it</h3>
+        <p><b>QEMU</b> (Windows, Linux, macOS):</p>
+        <pre><code>qemu-system-i386 -cdrom aliceos-3.0.iso -m 256</code></pre>
+        <p style="margin-top:12px"><b>A real PC</b>: write the ISO to a USB stick with Rufus in &ldquo;DD image&rdquo; mode, turn off Secure Boot and boot from the stick. AliceOS never writes to your hard disk. The keyboard and mouse need PS/2 or &ldquo;USB legacy support&rdquo; in the BIOS, because there is no USB driver yet.</p>
+      </div>
+      <div class="card">
+        <h3>Check your download</h3>
+        <p>SHA-256 of <code>aliceos-3.0.iso</code>:</p>
+        <pre class="hash"><code>0a94b5ebda7e9fd6cdd5f51df3d78c6d3267d259f76a970b6efd30a7487e573f</code></pre>
+        <p style="margin-top:12px">Windows: <code>certutil -hashfile aliceos-3.0.iso SHA256</code><br>Linux/macOS: <code>sha256sum aliceos-3.0.iso</code><br>Also available as <a href="/aliceos-3.0.iso.sha256">aliceos-3.0.iso.sha256</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" style="padding-top:20px">
+  <div class="wrap">
+    <h2>Questions</h2>
+    <details><summary>Is it safe to try?</summary><p>Yes. In VirtualBox, AliceOS runs inside its own virtual machine with no hard disk attached, so it cannot touch your files. On a real PC it only reads the USB stick and never writes to any disk.</p></details>
+    <details><summary>Can it replace Windows or Linux?</summary><p>No, and it does not try to. AliceOS is a learning and showcase project: it has no internet, sound or USB drivers yet, and files are not kept after shutdown. Its goal is to show how an operating system works, from the boot loader to the desktop.</p></details>
+    <details><summary>The mouse is stuck inside the window</summary><p>Press the Host key (Right Ctrl on Windows and Linux, Left &#8984; on Mac). In QEMU, press Ctrl+Alt+G.</p></details>
+    <details><summary>I have a Mac with an Apple chip (M1, M2, M3, M4)</summary><p>AliceOS is built for Intel-compatible (x86) processors. VirtualBox on Apple chips cannot run it; you can use UTM with x86 emulation instead, which works but runs more slowly.</p></details>
+    <details><summary>The screen stays black</summary><p>Check that the VM type is &ldquo;Other&rdquo;, that it has at least 256 MB of memory and 16 MB of video memory, and that the ISO is attached to the optical drive. Then restart the VM.</p></details>
+    <details><summary>What can I try first?</summary><p>Open the Terminal and type <code>neofetch</code>, <code>help</code> or <code>tree ~</code>. Right-click the desktop, drag a window to the edge of the screen, switch to dark mode in Settings, or play Snake.</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>AliceOS 3.0 &mdash; made by Alice, written from scratch in C and x86 assembly.</span>
+    <span>Fonts: Inter (SIL OFL) and DejaVu Sans Mono.</span>
+  </div>
+</footer>
+
+</body>
+</html>

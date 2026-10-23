@@ -9,7 +9,12 @@ const SERVER_INFO = { name: "gps", version: "1.0.0" };
 const PROTOCOL_VERSIONS = ["2025-06-18", "2025-03-26", "2024-11-05"];
 const UA = "gps-alice/1.0 (connecteur MCP personnel; +https://gps-alice.vercel.app)";
 const NOMINATIM = "https://nominatim.openstreetmap.org";
-const OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"];
+const OVERPASS = [
+  "https://overpass-api.de/api/interpreter",
+  "https://overpass.kumi.systems/api/interpreter",
+  "https://overpass.private.coffee/api/interpreter",
+  "https://maps.mail.ru/osm/tools/overpass/api/interpreter"
+];
 const OSRM = {
   voiture: "https://router.project-osrm.org/route/v1/driving",
   pied: "https://routing.openstreetmap.de/routed-foot/route/v1/foot",
@@ -247,15 +252,19 @@ async function chercherLieux(a) {
     description = r[0].display_name;
   }
   const corps = filtres.map((f) => `nwr${f}${zone};`).join("");
-  const q = `[out:json][timeout:40];(${corps});out center tags ${Math.min(limite * 4, 800)};`;
-  let r, derniereErreur;
-  for (const serveur of OVERPASS) {
-    try {
-      r = await requete(serveur, { method: "POST", body: "data=" + encodeURIComponent(q), headers: { "Content-Type": "application/x-www-form-urlencoded" } }, 45000);
-      break;
-    } catch (e) { derniereErreur = e; }
+  const q = `[out:json][timeout:25];(${corps});out center tags ${Math.min(limite * 4, 800)};`;
+  // Interroge plusieurs serveurs Overpass en parallèle ; le premier qui répond correctement gagne.
+  let r;
+  try {
+    r = await Promise.any(OVERPASS.map(async (serveur) => {
+      const j = await requete(serveur, { method: "POST", body: "data=" + encodeURIComponent(q), headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" } }, 40000);
+      if (!j || !Array.isArray(j.elements)) throw new ErreurOutil("Réponse Overpass invalide.");
+      if (j.remark && /runtime error|timed out/i.test(j.remark)) throw new ErreurOutil("Overpass : " + j.remark);
+      return j;
+    }));
+  } catch (e) {
+    throw new ErreurOutil("Les serveurs de recherche OpenStreetMap sont surchargés en ce moment. Réessayez dans quelques minutes.");
   }
-  if (!r) throw derniereErreur || new ErreurOutil("Service de recherche indisponible.");
 
   let lieux = (r.elements || []).map((el) => {
     const t = el.tags || {};

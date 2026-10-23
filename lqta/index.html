@@ -172,6 +172,19 @@ h1{font-size:24px;line-height:1.2}
 .mform{position:sticky;bottom:calc(70px + env(safe-area-inset-bottom));display:flex;gap:8px;background:#fff;padding:10px 0}
 .mform input{flex:1}
 @media (min-width:701px){.mform{bottom:0}}
+.post video.ph{background:#000;object-fit:contain}
+.grid .vb{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.55);color:#fff;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:700}
+.reels{height:calc(100vh - 210px);min-height:420px;overflow-y:auto;scroll-snap-type:y mandatory;border-radius:18px;background:#000;outline-offset:2px}
+.reel{position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;display:grid;place-items:center}
+.reel video{width:100%;height:100%;object-fit:contain;background:#000}
+.reel .rinfo{position:absolute;left:12px;right:70px;bottom:14px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7)}
+.reel .rinfo a{color:#fff}.reel .rinfo p{font-size:14px;margin-top:4px;max-height:3.2em;overflow:hidden}
+.reel .rinfo p a.hl{color:#fff;text-decoration:underline}
+.reel .ract{position:absolute;right:10px;bottom:20px;display:flex;flex-direction:column;gap:14px;align-items:center}
+.reel .ract button,.reel .ract a{display:flex;flex-direction:column;align-items:center;color:#fff;font-weight:700;font-size:13px;text-shadow:0 1px 3px rgba(0,0,0,.7)}
+.reel .ract svg{width:30px;height:30px}.reel .ract .liked{color:#ff5b8a}.reel .ract .liked svg{fill:#ff5b8a}
+.reel .rmute{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.5);color:#fff;border-radius:999px;width:38px;height:38px;font-size:18px}
+.vprev{width:100%;aspect-ratio:1/1;background:#000;border-radius:12px;object-fit:contain}
 @media (prefers-reduced-motion:no-preference){.likepop{animation:pop .3s ease}@keyframes pop{50%{transform:scale(1.25)}}}
 </style>
 </head>
@@ -179,6 +192,7 @@ h1{font-size:24px;line-height:1.2}
 <header class="top"><div class="in">
   <a class="logo" href="#/" aria-label="Lqta, accueil">lqta<i>.</i></a>
   <nav class="tnav" id="tnav" aria-label="Navigation"></nav>
+  <a class="mi" id="ri" href="#/reels" aria-label="Reels" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M10 9l5 3-5 3z" fill="currentColor"/></svg></a>
   <a class="mi" id="mi" href="#/messages" aria-label="Messages" hidden></a>
 </div></header>
 <main id="app" aria-live="polite"></main>
@@ -202,6 +216,8 @@ const app = document.getElementById("app");
 /* ---------- utilitaires ---------- */
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const photoUrl = (p) => sb.storage.from("photos").getPublicUrl(p).data.publicUrl;
+const videoUrl = (p) => sb.storage.from("videos").getPublicUrl(p).data.publicUrl;
+const MAX_VIDEO_MB = 20, MAX_VIDEO_S = 30;
 function ago(d){
   const s = (Date.now() - new Date(d)) / 1000;
   if (s < 60) return "à l'instant";
@@ -254,7 +270,8 @@ function postCard(p, liked, opts = {}){
       ${me ? `<div class="menu"><button aria-label="Options" data-menu>${ICON.dots}</button></div>` : ""}
     </header>
     ${p.hidden ? `<div class="hiddenbox"><b>Visible seulement par vous.</b> ${esc(p.hidden_reason || "Cette publication est masquée.")}</div>` : ""}
-    <a href="#/p/${p.id}"><img class="ph" src="${esc(photoUrl(p.image_path))}" alt="Photo publiée par ${esc(p.username)}" loading="lazy"></a>
+    ${p.video_path ? `<video class="ph" src="${esc(videoUrl(p.video_path))}" poster="${esc(photoUrl(p.image_path))}" controls playsinline preload="none" aria-label="Vidéo publiée par ${esc(p.username)}"></video>`
+      : `<a href="#/p/${p.id}"><img class="ph" src="${esc(photoUrl(p.image_path))}" alt="Photo publiée par ${esc(p.username)}" loading="lazy"></a>`}
     <div class="acts">
       <button data-like class="${liked?"liked":""}" aria-pressed="${liked?"true":"false"}" aria-label="J'aime">${ICON.heart}<span>${p.like_count}</span></button>
       <a href="#/p/${p.id}" aria-label="Commentaires">${ICON.cmt}<span>${p.comment_count}</span></a>
@@ -309,9 +326,9 @@ function bindPosts(root){
         const b = ev.target.closest("button"); if (!b) return;
         if (b.dataset.del !== undefined) {
           if (!confirm("Supprimer cette publication ? Cette action est définitive.")) return;
-          const { data } = await sb.from("posts").select("image_path").eq("id", id).single();
+          const { data } = await sb.from("posts").select("image_path,video_path").eq("id", id).single();
           const { error } = await sb.from("posts").delete().eq("id", id);
-          if (!error) { if (data) await sb.storage.from("photos").remove([data.image_path]); el.remove(); }
+          if (!error) { if (data) { await sb.storage.from("photos").remove([data.image_path]); if (data.video_path) await sb.storage.from("videos").remove([data.video_path]); } el.remove(); }
         } else {
           const { error } = await sb.from("reports").insert({ post_id: id, reporter_id: me.id, reason: b.dataset.rep });
           pop.innerHTML = `<button disabled>${error && error.code === "23505" ? "Vous avez déjà signalé cette publication." : "Merci, signalement envoyé."}</button>`;
@@ -378,12 +395,12 @@ async function pageDiscover(){
   let page = 0; const grid = document.getElementById("grid"), more = document.getElementById("more");
   async function load(){
     more.innerHTML = "";
-    let q = sb.from("posts_feed").select("id,image_path,username").eq("hidden", false).order("created_at", { ascending:false }).range(page*30, page*30+29);
+    let q = sb.from("posts_feed").select("id,image_path,username,video_path").eq("hidden", false).order("created_at", { ascending:false }).range(page*30, page*30+29);
     if (cat) q = q.eq("category", cat);
     const { data, error } = await q;
     if (error) { grid.outerHTML = `<p class="err">${esc(error.message)}</p>`; return; }
     if (!data.length && page === 0) { grid.outerHTML = `<div class="empty"><b>Rien ici pour l'instant.</b>Soyez la première personne à publier${cat ? " dans « " + esc(CAT[cat]) + " »" : ""}.<br>${me ? `<a class="btn" href="#/publier">Publier une photo</a>` : `<a class="btn" href="#/connexion">Créer un compte</a>`}</div>`; return; }
-    grid.insertAdjacentHTML("beforeend", data.map(p => `<a href="#/p/${p.id}"><img src="${esc(photoUrl(p.image_path))}" alt="Photo de ${esc(p.username)}" loading="lazy"></a>`).join(""));
+    grid.insertAdjacentHTML("beforeend", data.map(p => `<a href="#/p/${p.id}"><img src="${esc(photoUrl(p.image_path))}" alt="Photo de ${esc(p.username)}" loading="lazy">${p.video_path ? `<span class="vb">▶</span>` : ""}</a>`).join(""));
     if (data.length === 30) { more.innerHTML = `<button class="btn ghost">Voir plus</button>`; more.firstChild.onclick = () => { page++; load(); }; }
   }
   load();
@@ -421,7 +438,7 @@ async function pageProfile(username){
     sb.from("posts").select("id", { count:"exact", head:true }).eq("user_id", u.id).eq("hidden", false),
     sb.from("follows").select("follower_id", { count:"exact", head:true }).eq("following_id", u.id),
     sb.from("follows").select("following_id", { count:"exact", head:true }).eq("follower_id", u.id),
-    sb.from("posts").select("id,image_path,hidden").eq("user_id", u.id).order("created_at", { ascending:false }).limit(90),
+    sb.from("posts").select("id,image_path,hidden,video_path").eq("user_id", u.id).order("created_at", { ascending:false }).limit(90),
     me && !mine ? sb.from("follows").select("follower_id").eq("follower_id", me.id).eq("following_id", u.id).maybeSingle() : Promise.resolve({ data:null })
   ]);
   let following = !!fol.data;
@@ -432,7 +449,7 @@ async function pageProfile(username){
       ${mine ? `<a class="btn ghost" href="#/modifier">Modifier le profil</a><a class="btn ghost" href="#/enregistres">Enregistrés</a><a class="btn ghost" href="#" id="lo2">Se déconnecter</a>`
              : me ? `<button class="btn ${following?"ghost":""}" id="fb">${following?"Abonné":"Suivre"}</button><a class="btn ghost" href="#/m/${esc(u.username)}">Message</a>` : `<a class="btn" href="#/connexion">Se connecter pour suivre</a>`}
     </div>
-    ${(posts||[]).length ? `<div class="grid">${posts.map(p => `<a href="#/p/${p.id}"><img src="${esc(photoUrl(p.image_path))}" alt="" loading="lazy">${p.hidden?`<span class="flag">Masquée</span>`:""}</a>`).join("")}</div>`
+    ${(posts||[]).length ? `<div class="grid">${posts.map(p => `<a href="#/p/${p.id}"><img src="${esc(photoUrl(p.image_path))}" alt="" loading="lazy">${p.video_path?`<span class="vb">▶</span>`:""}${p.hidden?`<span class="flag">Masquée</span>`:""}</a>`).join("")}</div>`
       : `<div class="empty"><b>${mine ? "Vous n'avez encore rien publié." : "Aucune publication."}</b>${mine ? `<a class="btn" href="#/publier">Publier ma première photo</a>` : ""}</div>`}`;
   const lo2 = document.getElementById("lo2"); if (lo2) lo2.onclick = async (e) => { e.preventDefault(); await sb.auth.signOut(); };
   const fb = document.getElementById("fb");
@@ -459,31 +476,65 @@ function resizeImage(file, max = 1080){
   });
 }
 
+function videoInfo(file){
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), v = document.createElement("video");
+    v.preload = "metadata"; v.muted = true; v.playsInline = true;
+    v.onloadedmetadata = () => { const d = v.duration; if (!isFinite(d)) { URL.revokeObjectURL(url); return rej(new Error("Vidéo illisible.")); } v.currentTime = Math.min(0.5, d / 2); };
+    v.onseeked = () => {
+      const s = Math.min(1, 1080 / Math.max(v.videoWidth, v.videoHeight)); const c = document.createElement("canvas");
+      c.width = Math.round(v.videoWidth * s); c.height = Math.round(v.videoHeight * s);
+      c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
+      c.toBlob(b => { const d = v.duration; URL.revokeObjectURL(url); b ? res({ duration: d, poster: b }) : rej(new Error("Aperçu impossible.")); }, "image/jpeg", 0.85);
+    };
+    v.onerror = () => { URL.revokeObjectURL(url); rej(new Error("Ce format vidéo n'est pas lisible par votre navigateur (essayez MP4).")); };
+    v.src = url;
+  });
+}
+
 function pagePublish(){
   if (!me) return (location.hash = "#/connexion");
-  app.innerHTML = `<h1>Publier une photo</h1><p class="lead">Elle apparaîtra en haut du fil de vos abonnés, dans l'ordre d'arrivée.</p>
+  app.innerHTML = `<h1>Publier</h1><p class="lead">Une photo, ou une vidéo courte (${MAX_VIDEO_S} secondes et ${MAX_VIDEO_MB} Mo au maximum). Elle apparaîtra en haut du fil de vos abonnés, dans l'ordre d'arrivée.</p>
   <form id="pf">
-    <div class="field"><label for="pfile" class="drop" id="drop">Touchez pour choisir une photo<br><small>JPEG, PNG ou WebP</small></label><input type="file" id="pfile" accept="image/*" class="sr"></div>
+    <div class="field"><label for="pfile" class="drop" id="drop">Touchez pour choisir une photo ou une vidéo<br><small>JPEG, PNG, WebP, MP4 ou WebM</small></label><input type="file" id="pfile" accept="image/*,video/mp4,video/webm,video/quicktime" class="sr"></div>
     <div class="field"><label for="pcat">Thème</label><select id="pcat">${CATS.map(([k,t]) => `<option value="${k}">${t}</option>`).join("")}</select></div>
-    <div class="field"><label for="pcap">Légende <small>(facultatif)</small></label><textarea id="pcap" maxlength="1000" placeholder="Racontez l'histoire de cette photo"></textarea></div>
+    <div class="field"><label for="pcap">Légende <small>(facultatif)</small></label><textarea id="pcap" maxlength="1000" placeholder="Racontez l'histoire de cette publication"></textarea></div>
     <div id="pmsg"></div>
     <button class="btn" id="pbtn" disabled>Publier</button>
   </form>`;
-  let blob = null;
+  let blob = null, vfile = null, poster = null;
   const pfile = document.getElementById("pfile"), drop = document.getElementById("drop"), pbtn = document.getElementById("pbtn"), msg = document.getElementById("pmsg");
   pfile.onchange = async () => {
-    msg.innerHTML = ""; const f = pfile.files[0]; if (!f) return;
-    try { blob = await resizeImage(f); drop.innerHTML = `<img src="${URL.createObjectURL(blob)}" alt="Aperçu de la photo">`; pbtn.disabled = false; }
-    catch (e) { msg.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+    msg.innerHTML = ""; blob = vfile = poster = null; pbtn.disabled = true; const f = pfile.files[0]; if (!f) return;
+    try {
+      if (f.type.startsWith("video/")) {
+        if (f.size > MAX_VIDEO_MB * 1048576) throw new Error(`Cette vidéo pèse ${(f.size/1048576).toFixed(1)} Mo. Maximum : ${MAX_VIDEO_MB} Mo.`);
+        const info = await videoInfo(f);
+        if (info.duration > MAX_VIDEO_S + 0.5) throw new Error(`Cette vidéo dure ${Math.round(info.duration)} secondes. Maximum : ${MAX_VIDEO_S} secondes.`);
+        vfile = f; poster = info.poster;
+        drop.innerHTML = `<video class="vprev" src="${URL.createObjectURL(f)}" controls muted playsinline></video>`;
+      } else {
+        blob = await resizeImage(f); drop.innerHTML = `<img src="${URL.createObjectURL(blob)}" alt="Aperçu de la photo">`;
+      }
+      pbtn.disabled = false;
+    } catch (e) { msg.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
   };
   document.getElementById("pf").onsubmit = async (e) => {
-    e.preventDefault(); if (!blob) return;
+    e.preventDefault(); if (!blob && !vfile) return;
     pbtn.disabled = true; pbtn.textContent = "Publication…";
-    const path = `${me.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
-    const up = await sb.storage.from("photos").upload(path, blob, { contentType: "image/jpeg" });
-    if (up.error) { msg.innerHTML = `<p class="err">Envoi de la photo impossible : ${esc(up.error.message)}</p>`; pbtn.disabled = false; pbtn.textContent = "Publier"; return; }
-    const { data, error } = await sb.from("posts").insert({ user_id: me.id, image_path: path, caption: document.getElementById("pcap").value.trim() || null, category: document.getElementById("pcat").value }).select("id").single();
-    if (error) { await sb.storage.from("photos").remove([path]); msg.innerHTML = `<p class="err">${esc(error.message)}</p>`; pbtn.disabled = false; pbtn.textContent = "Publier"; return; }
+    const fail = (t) => { msg.innerHTML = `<p class="err">${esc(t)}</p>`; pbtn.disabled = false; pbtn.textContent = "Publier"; };
+    const base = `${me.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+    const imgPath = base + ".jpg"; let vidPath = null;
+    const up = await sb.storage.from("photos").upload(imgPath, vfile ? poster : blob, { contentType: "image/jpeg" });
+    if (up.error) return fail("Envoi de l'image impossible : " + up.error.message);
+    if (vfile) {
+      const ext = vfile.type === "video/webm" ? "webm" : vfile.type === "video/quicktime" ? "mov" : "mp4";
+      vidPath = base + "." + ext;
+      const uv = await sb.storage.from("videos").upload(vidPath, vfile, { contentType: vfile.type });
+      if (uv.error) { await sb.storage.from("photos").remove([imgPath]); return fail("Envoi de la vidéo impossible : " + uv.error.message); }
+    }
+    const { data, error } = await sb.from("posts").insert({ user_id: me.id, image_path: imgPath, video_path: vidPath, caption: document.getElementById("pcap").value.trim() || null, category: document.getElementById("pcat").value }).select("id").single();
+    if (error) { await sb.storage.from("photos").remove([imgPath]); if (vidPath) await sb.storage.from("videos").remove([vidPath]); return fail(error.message); }
     location.hash = "#/p/" + data.id;
   };
 }
@@ -745,7 +796,40 @@ async function pageThread(username){
   };
 }
 
+/* ---------- reels (vidéos courtes) ---------- */
+async function pageReels(){
+  app.innerHTML = `<h1>Reels</h1><p class="lead">Vidéos courtes, de la plus récente à la plus ancienne.</p><div class="reels" id="rl" tabindex="0" aria-label="Vidéos"></div>`;
+  const rl = document.getElementById("rl");
+  const { data, error } = await sb.from("posts_feed").select("*").eq("hidden", false).not("video_path", "is", null).order("created_at", { ascending:false }).limit(20);
+  if (error) { rl.outerHTML = `<p class="err">${esc(error.message)}</p>`; return; }
+  if (!data.length) { rl.outerHTML = `<div class="empty"><b>Aucune vidéo pour l'instant.</b>Soyez la première personne à en publier une.<br>${me ? `<a class="btn" href="#/publier">Publier une vidéo</a>` : `<a class="btn" href="#/connexion">Créer un compte</a>`}</div>`; return; }
+  const liked = await likedSet(data.map(p => p.id));
+  rl.innerHTML = data.map(p => `<section class="reel" data-id="${p.id}">
+    <video src="${esc(videoUrl(p.video_path))}" poster="${esc(photoUrl(p.image_path))}" loop muted playsinline preload="metadata"></video>
+    <button class="rmute" aria-label="Activer le son">🔇</button>
+    <div class="rinfo"><a href="#/u/${esc(p.username)}"><b>@${esc(p.username)}</b></a><p>${p.caption ? tagLinks(p.caption) : ""}</p></div>
+    <div class="ract">
+      <button data-rl class="${liked.has(p.id) ? "liked" : ""}" aria-label="J'aime">${ICON.heart}<span>${p.like_count}</span></button>
+      <a href="#/p/${p.id}" aria-label="Commentaires">${ICON.cmt}<span>${p.comment_count}</span></a>
+    </div></section>`).join("");
+  const vids = [...rl.querySelectorAll(".reel")];
+  const io = new IntersectionObserver((es) => es.forEach(e => { const v = e.target.querySelector("video"); if (e.isIntersecting && e.intersectionRatio > .6) v.play().catch(() => {}); else v.pause(); }), { root: rl, threshold: [0, .6, 1] });
+  vids.forEach(r => {
+    io.observe(r); const v = r.querySelector("video"), mb = r.querySelector(".rmute");
+    mb.onclick = () => { v.muted = !v.muted; mb.textContent = v.muted ? "🔇" : "🔊"; mb.setAttribute("aria-label", v.muted ? "Activer le son" : "Couper le son"); };
+    v.onclick = () => v.paused ? v.play() : v.pause();
+    const lb = r.querySelector("[data-rl]"), id = Number(r.dataset.id);
+    lb.onclick = async () => {
+      if (!me) return (location.hash = "#/connexion");
+      const on = lb.classList.toggle("liked"); const n = lb.querySelector("span"); n.textContent = Number(n.textContent) + (on ? 1 : -1);
+      const { error } = on ? await sb.from("likes").insert({ user_id: me.id, post_id: id }) : await sb.from("likes").delete().eq("user_id", me.id).eq("post_id", id);
+      if (error) { lb.classList.toggle("liked"); n.textContent = Number(n.textContent) + (on ? -1 : 1); }
+    };
+  });
+}
+
 /* ---------- routeur ---------- */
+
 
 async function route(){
   nav(); window.scrollTo(0, 0); clearInterval(poll);
@@ -762,6 +846,7 @@ async function route(){
   if (h === "#/notifications") return pageNotifs();
   if (h === "#/enregistres") return pageSaved();
   if (h === "#/messages") return pageMessages();
+  if (h === "#/reels") return pageReels();
   if ((m = h.match(/^#\/m\/([a-z0-9_.]+)$/))) return pageThread(m[1]);
   if ((m = h.match(/^#\/p\/(\d+)$/))) return pagePost(Number(m[1]));
   if ((m = h.match(/^#\/u\/([a-z0-9_.]+)$/))) return pageProfile(m[1]);

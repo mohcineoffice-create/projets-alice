@@ -10,6 +10,8 @@ Projets construits avec Claude.
 | `calcul-trs-mcp/` | Connecteur MCP de calcul du TRS / OEE | https://calcul-trs-mcp.vercel.app |
 | `produit-trs/` | Tableau de bord TRS/OEE Excel à vendre (générateur Python) | — |
 | `outils/` | Outil de montage vidéo (ffmpeg) et générateur de vidéo pédagogique | — |
+| `aliceos/` | AliceOS 0.1 : petit système d'exploitation en mode texte (bootloader + noyau C + shell) | — |
+| `aliceos2/` | AliceOS 2.0 : système d'exploitation graphique écrit de zéro (fenêtres, souris, 6 applications) | — |
 | `docs/` | Dossiers techniques de chaque projet (en arabe) | — |
 
 Aucun secret n'est stocké ici : jetons et clés sont dans les variables d'environnement Vercel.

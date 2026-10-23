@@ -263,12 +263,12 @@ async function chercherLieux(a) {
     description = r[0].display_name;
   }
   const corps = filtres.map((f) => `nwr${f}${zone};`).join("");
-  const q = `[out:json][timeout:25];(${corps});out center tags ${Math.min(limite * 4, 800)};`;
+  const q = `[out:json][timeout:14];(${corps});out center tags ${Math.min(limite * 4, 800)};`;
   // Interroge plusieurs serveurs Overpass en parallèle ; le premier qui répond correctement gagne.
   let r;
   try {
     r = await Promise.any(OVERPASS.map(async (serveur) => {
-      const j = await requete(serveur, { method: "POST", body: "data=" + encodeURIComponent(q), headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" } }, 40000);
+      const j = await requete(serveur, { method: "POST", body: "data=" + encodeURIComponent(q), headers: { "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" } }, 15000);
       if (!j || !Array.isArray(j.elements)) throw new ErreurOutil("Réponse Overpass invalide.");
       if (j.remark && /runtime error|timed out/i.test(j.remark)) throw new ErreurOutil("Overpass : " + j.remark);
       return j;

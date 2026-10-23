@@ -177,8 +177,9 @@ async function navigateur() {
 // Ouvre une page isolée, applique le filtrage réseau, exécute fn(page, infos), puis ferme tout.
 async function avecPage(url, options, fn) {
   const b = await navigateur();
-  const contexte = await b.createBrowserContext();
-  const page = await contexte.newPage();
+  // Chromium serverless tourne en --single-process : pas de contexte isolé possible,
+  // on utilise le contexte par défaut et on efface cookies et cache après chaque page.
+  const page = await b.newPage();
   const infos = { requetes: 0, octets: 0, echecs: [], erreursJs: [], consoleErreurs: [], statut: null };
   const cacheHotes = new Map();
   try {
@@ -226,7 +227,13 @@ async function avecPage(url, options, fn) {
     infos.titre = await page.title().catch(() => "");
     return await fn(page, infos);
   } finally {
-    await contexte.close().catch(() => {});
+    try {
+      const cdp = await page.createCDPSession();
+      await cdp.send("Network.clearBrowserCookies");
+      await cdp.send("Network.clearBrowserCache");
+      await cdp.send("Storage.clearDataForOrigin", { origin: new URL(infos.urlFinale || url).origin, storageTypes: "all" });
+    } catch (e) {}
+    await page.close().catch(() => {});
   }
 }
 
@@ -479,6 +486,9 @@ async function traiter(msg) {
         const content = await impl((params && params.arguments) || {});
         return ok({ content });
       } catch (e) {
+        if (!(e instanceof ErreurOutil) && /Target closed|Session closed|Connection closed|Protocol error/i.test(String(e.message))) {
+          navigateurPromis = null; // le navigateur a planté : relance au prochain appel
+        }
         const message = e instanceof ErreurOutil ? e.message : "Erreur du navigateur : " + String(e.message || e).split("\n")[0];
         return ok({ content: [{ type: "text", text: message }], isError: true });
       }

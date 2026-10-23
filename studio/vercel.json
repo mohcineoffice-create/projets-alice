@@ -1,0 +1,10 @@
+{
+  "installCommand": "ONNXRUNTIME_NODE_INSTALL_CUDA=skip npm install && sh prune.sh",
+  "rewrites": [
+    { "source": "/mcp/:token", "destination": "/api/studio?token=:token" },
+    { "source": "/audio", "destination": "/api/studio?audio=1" }
+  ],
+  "functions": {
+    "api/studio.js": { "maxDuration": 60, "memory": 2048 }
+  }
+}

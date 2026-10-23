@@ -143,7 +143,7 @@ footer .wrap{{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap
 <section style="padding-top:0"><div class="wrap"><div class="pitch">
   <h2>Ce que ce site apporterait à {e(nom)}</h2>
   <ul>
-    <li>Visible sur Google quand on cherche « restaurant Kénitra »</li>
+    <li>Visible sur Google quand on cherche « {e(r.get("mot_cle", "restaurant Kénitra"))} »</li>
     <li>Commandes et réservations directement sur WhatsApp</li>
     <li>Carte et prix toujours à jour, sans réimprimer</li>
     <li>Itinéraire en un clic depuis le téléphone</li>

@@ -480,7 +480,7 @@ function videoInfo(file){
   return new Promise((res, rej) => {
     const url = URL.createObjectURL(file), v = document.createElement("video");
     v.preload = "metadata"; v.muted = true; v.playsInline = true;
-    v.onloadedmetadata = () => { const d = v.duration; if (!isFinite(d)) { URL.revokeObjectURL(url); return rej(new Error("Vidéo illisible.")); } v.currentTime = Math.min(0.5, d / 2); };
+    v.onloadedmetadata = () => { const d = v.duration; if (!isFinite(d)) { URL.revokeObjectURL(url); return rej(new Error("Vidéo illisible.")); } v.currentTime = Math.min(d * 0.4, 3); };
     v.onseeked = () => {
       const s = Math.min(1, 1080 / Math.max(v.videoWidth, v.videoHeight)); const c = document.createElement("canvas");
       c.width = Math.round(v.videoWidth * s); c.height = Math.round(v.videoHeight * s);

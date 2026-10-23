@@ -152,11 +152,11 @@ async function urlValide(v) {
 let navigateurPromis = null;
 
 async function lancerNavigateur() {
-  const puppeteer = require("puppeteer-core");
+  const puppeteer = (await import("puppeteer-core")).default;
   if (process.env.LOCAL_CHROMIUM) {
     return puppeteer.launch({ executablePath: process.env.LOCAL_CHROMIUM, headless: true, args: ["--no-sandbox"] });
   }
-  const chromium = require("@sparticuz/chromium");
+  const chromium = (await import("@sparticuz/chromium")).default;
   return puppeteer.launch({
     args: chromium.args,
     executablePath: await chromium.executablePath(),

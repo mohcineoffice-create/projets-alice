@@ -1,0 +1,56 @@
+[
+  {
+    "slug": "mini-chicken",
+    "nom": "Mini Chicken",
+    "adresse": "525 boulevard Mohammed V, résidence El Hachmi, Kénitra",
+    "telephone": "05 37 39 53 35",
+    "horaires": null,
+    "lat": 34.255894,
+    "lon": -6.594698,
+    "titre": "Mini Chicken, au cœur du boulevard Mohammed V.",
+    "sous_titre": "Votre restaurant de Kénitra, maintenant trouvable en ligne : carte, adresse, appel et commande en un clic.",
+    "couleurs": { "main": "#7A1F12", "main2": "#A8321E", "accent": "#F5B700", "soft": "#FCE9D9" },
+    "exemples_carte": [
+      ["Menu poulet", "Exemple : votre formule phare avec accompagnement et boisson."],
+      ["Sandwich maison", "Exemple : décrivez ici votre sandwich le plus commandé."],
+      ["Assiette familiale", "Exemple : pour partager à plusieurs."],
+      ["Desserts et boissons", "Exemple : vos boissons fraîches et desserts."]
+    ]
+  },
+  {
+    "slug": "fire-place",
+    "nom": "Fire Place",
+    "adresse": "Rue Al Jahid, Ville Haute, Kénitra",
+    "telephone": "05 37 32 79 44",
+    "horaires": "Mo-Su 08:00-22:30",
+    "lat": 34.266391,
+    "lon": -6.590089,
+    "titre": "Fire Place, ouvert tous les jours à la Ville Haute.",
+    "sous_titre": "Du petit-déjeuner au dîner, de 8 h à 22 h 30 : un site pour que vos clients voient la carte et vous appellent directement.",
+    "couleurs": { "main": "#1F2937", "main2": "#374151", "accent": "#F97316", "soft": "#FFEDD5" },
+    "exemples_carte": [
+      ["Petit-déjeuner", "Exemple : votre formule du matin."],
+      ["Plat grillé", "Exemple : votre spécialité au feu de bois ou au grill."],
+      ["Plat du jour", "Exemple : mis à jour chaque matin en quelques secondes."],
+      ["Café et douceurs", "Exemple : boissons chaudes et pâtisseries."]
+    ]
+  },
+  {
+    "slug": "el-bayt-achami",
+    "nom": "El Bayt Achami",
+    "adresse": "Avenue Moulay Abderrahmane, Ville Haute, Kénitra",
+    "telephone": "05 37 32 55 55",
+    "horaires": null,
+    "lat": 34.259066,
+    "lon": -6.587902,
+    "titre": "El Bayt Achami, avenue Moulay Abderrahmane.",
+    "sous_titre": "Un site simple pour que les habitants de Kénitra découvrent votre carte, trouvent l'adresse et commandent par téléphone ou WhatsApp.",
+    "couleurs": { "main": "#14532D", "main2": "#166534", "accent": "#EAB308", "soft": "#DCFCE7" },
+    "exemples_carte": [
+      ["Chawarma", "Exemple : votre chawarma signature."],
+      ["Grillades", "Exemple : brochettes et viandes grillées."],
+      ["Mezzés", "Exemple : houmous, moutabal, taboulé."],
+      ["Douceurs", "Exemple : vos desserts maison."]
+    ]
+  }
+]

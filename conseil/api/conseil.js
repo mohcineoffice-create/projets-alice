@@ -27,6 +27,7 @@ const TOOLS = [
       type: "object",
       properties: {
         message: { type: "string", description: "Question, idée ou critique à soumettre (8000 caractères max)" },
+        modele: { type: "string", description: "Facultatif : identifiant du modèle (voir modeles_gemini). Par défaut : le modèle configuré." },
         historique: {
           type: "array",
           description: "Tours précédents (8 max), du plus ancien au plus récent",
@@ -97,6 +98,11 @@ async function appelGoogle(url, options) {
 async function consulter(a) {
   if (typeof a.message !== "string" || !a.message.trim()) throw new ErreurOutil("« message » est obligatoire.");
   if (a.message.length > MAX_MESSAGE) throw new ErreurOutil(`« message » est trop long (${MAX_MESSAGE} caractères max).`);
+  let modele = MODELE_DEFAUT;
+  if (a.modele !== undefined) {
+    if (typeof a.modele !== "string" || !/^[a-z0-9][a-z0-9.\-]{2,60}$/.test(a.modele)) throw new ErreurOutil("« modele » invalide.");
+    modele = a.modele;
+  }
   const hist = a.historique === undefined ? [] : a.historique;
   if (!Array.isArray(hist) || hist.length > MAX_TOURS) throw new ErreurOutil(`« historique » doit être une liste de ${MAX_TOURS} tours maximum.`);
   const contents = [];
@@ -111,7 +117,7 @@ async function consulter(a) {
   verifier(a.message);
   contents.push({ role: "user", parts: [{ text: a.message.trim() }] });
 
-  const json = await appelGoogle(`${API}/models/${encodeURIComponent(MODELE_DEFAUT)}:generateContent`, {
+  const json = await appelGoogle(`${API}/models/${encodeURIComponent(modele)}:generateContent`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-goog-api-key": cle() },
     body: JSON.stringify({
@@ -126,7 +132,7 @@ async function consulter(a) {
     const raison = (cand && cand.finishReason) || (json && json.promptFeedback && json.promptFeedback.blockReason) || "inconnue";
     throw new ErreurOutil("Gemini n'a pas renvoyé de texte (raison : " + raison + ").");
   }
-  return [{ type: "text", text: `[Gemini · ${MODELE_DEFAUT}]\n${texte}` }];
+  return [{ type: "text", text: `[Gemini · ${modele}]\n${texte}` }];
 }
 
 async function modeles() {

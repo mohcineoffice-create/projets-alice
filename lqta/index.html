@@ -141,6 +141,37 @@ h1{font-size:24px;line-height:1.2}
 .post .acts .sp{flex:1}
 .post .acts .saved{color:var(--blue)}.post .acts .saved svg{fill:var(--blue)}
 .cap .hl{font-weight:600;color:var(--blue);margin:0}
+.sbar{display:flex;gap:12px;overflow-x:auto;padding:2px 0 14px;margin-bottom:6px;scrollbar-width:none}
+.sbar::-webkit-scrollbar{display:none}
+.sb{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:68px;font-size:12px;font-weight:600;color:var(--ink)}
+.sb .ring{width:64px;height:64px;border-radius:50%;padding:3px;background:linear-gradient(45deg,var(--saffron),var(--heart),var(--blue));display:grid;place-items:center}
+.sb .ring.seen{background:var(--line)}.sb .ring.add{background:var(--surface);border:2px dashed var(--line);color:var(--blue)}
+.sb .ring .av{width:100%;height:100%;border:3px solid #fff}
+.sb span.n{max-width:68px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sv{position:fixed;inset:0;z-index:50;background:#000;display:grid;place-items:center}
+.sv img{max-width:100%;max-height:100%;object-fit:contain}
+.sv .bars{position:absolute;top:calc(8px + env(safe-area-inset-top));left:8px;right:8px;display:flex;gap:4px}
+.sv .bars i{flex:1;height:3px;background:rgba(255,255,255,.35);border-radius:2px;overflow:hidden}
+.sv .bars i b{display:block;height:100%;width:0;background:#fff}
+.sv .hd{position:absolute;top:calc(20px + env(safe-area-inset-top));left:12px;right:12px;display:flex;align-items:center;gap:10px;color:#fff;font-weight:700}
+.sv .hd small{font-weight:400;opacity:.8}
+.sv .hd button{color:#fff;font-size:26px;margin-left:auto;padding:4px 10px}
+.sv .tap{position:absolute;top:70px;bottom:0;width:40%}.sv .tap.l{left:0}.sv .tap.r{right:0}
+.sv .del{position:absolute;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:rgba(255,255,255,.18);color:#fff;border-radius:999px;padding:8px 18px;font-weight:600;z-index:2}
+.mi{position:relative;display:flex;align-items:center;padding:8px 10px;border-radius:10px;color:var(--mute)}
+.mi[hidden]{display:none}
+.mi svg{width:24px;height:24px}.mi .badge{top:0;right:0}
+.conv a{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line)}
+.conv .t{flex:1;min-width:0}.conv .t b{display:block}.conv .t span{display:block;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv .t span.u{color:var(--ink);font-weight:700}
+.conv i.dot{width:10px;height:10px;border-radius:50%;background:var(--blue);flex:none}
+.thread{display:flex;flex-direction:column;gap:6px;min-height:50vh;padding-bottom:8px}
+.bub{max-width:78%;padding:8px 12px;border-radius:16px;background:var(--surface);overflow-wrap:anywhere;white-space:pre-wrap}
+.bub.me{align-self:flex-end;background:var(--blue);color:#fff}
+.bub small{display:block;font-size:11px;opacity:.7;margin-top:2px}
+.mform{position:sticky;bottom:calc(70px + env(safe-area-inset-bottom));display:flex;gap:8px;background:#fff;padding:10px 0}
+.mform input{flex:1}
+@media (min-width:701px){.mform{bottom:0}}
 @media (prefers-reduced-motion:no-preference){.likepop{animation:pop .3s ease}@keyframes pop{50%{transform:scale(1.25)}}}
 </style>
 </head>
@@ -148,6 +179,7 @@ h1{font-size:24px;line-height:1.2}
 <header class="top"><div class="in">
   <a class="logo" href="#/" aria-label="Lqta, accueil">lqta<i>.</i></a>
   <nav class="tnav" id="tnav" aria-label="Navigation"></nav>
+  <a class="mi" id="mi" href="#/messages" aria-label="Messages" hidden></a>
 </div></header>
 <main id="app" aria-live="polite"></main>
 <nav class="bnav" id="bnav" aria-label="Navigation"></nav>
@@ -164,7 +196,7 @@ const REASONS = [["spam","Spam ou arnaque"],["violence","Violence"],["nudite","N
 const PAGE = 15;
 
 let me = null;       // { id, username, ... }
-let mySaved = new Set(); let unread = 0;
+let mySaved = new Set(); let unread = 0, msgUnread = 0, poll = null;
 const app = document.getElementById("app");
 
 /* ---------- utilitaires ---------- */
@@ -194,6 +226,7 @@ const ICON = {
   dots:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
   bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 7H4c0-1 2-2 2-7z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>',
   mark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg>',
+  mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l5 5 9-10"/></svg>'
 };
 
@@ -205,6 +238,8 @@ function nav(){
   document.getElementById("tnav").innerHTML = items.map(([h,t,ic,c]) => `<a href="${h}" class="${on(h)?"on":""}">${t}${c==="nt"&&unread?`<span class="badge" aria-label="${unread} non lues">${unread>9?"9+":unread}</span>`:""}</a>`).join("") + (me ? `<a href="#" id="logout">Déconnexion</a>` : "");
   document.getElementById("bnav").innerHTML = `<div class="in" style="grid-template-columns:repeat(${items.length},1fr)">` +
     items.map(([h,t,ic,c]) => `<a href="${h}" class="${on(h)?"on":""} ${c||""}"><span class="ic">${ic}</span>${t}${c==="nt"&&unread?`<span class="badge" aria-label="${unread} non lues">${unread>9?"9+":unread}</span>`:""}</a>`).join("") + `</div>`;
+  const mi = document.getElementById("mi");
+  mi.hidden = !me; mi.innerHTML = ICON.mail + (msgUnread ? `<span class="badge" aria-label="${msgUnread} messages non lus">${msgUnread>9?"9+":msgUnread}</span>` : "");
   const lo = document.getElementById("logout");
   if (lo) lo.onclick = async (e) => { e.preventDefault(); await sb.auth.signOut(); };
 }
@@ -237,7 +272,8 @@ function tagLinks(t){
 async function refreshUnread(){
   if (!me) { unread = 0; return; }
   const { count } = await sb.from("notifications").select("id", { count:"exact", head:true }).eq("user_id", me.id).eq("read", false);
-  const n = count || 0; if (n !== unread) { unread = n; nav(); }
+  const { count: mc } = await sb.from("messages").select("id", { count:"exact", head:true }).eq("recipient_id", me.id).is("read_at", null);
+  const n = count || 0, m = mc || 0; if (n !== unread || m !== msgUnread) { unread = n; msgUnread = m; nav(); }
 }
 function bindPosts(root){
   root.querySelectorAll(".post").forEach(el => {
@@ -296,11 +332,12 @@ async function likedSet(ids){
 /* ---------- pages ---------- */
 async function pageFeed(){
   if (!me) return pageWelcome();
-  app.innerHTML = `<h1>Votre fil</h1><p class="lead">Les publications des comptes que vous suivez, de la plus récente à la plus ancienne. Rien n'est caché ni trié par un algorithme.</p><div id="list"></div><div class="more" id="more"></div>`;
+  app.innerHTML = `<div class="sbar" id="sbar" aria-label="Stories"></div><h1>Votre fil</h1><p class="lead">Les publications des comptes que vous suivez, de la plus récente à la plus ancienne. Rien n'est caché ni trié par un algorithme.</p><div id="list"></div><div class="more" id="more"></div>`;
   const { data: f } = await sb.from("follows").select("following_id").eq("follower_id", me.id);
   const ids = [me.id, ...(f || []).map(x => x.following_id)];
   const key = "lqta_seen_" + me.id;
   let prev = null; try { prev = localStorage.getItem(key); localStorage.setItem(key, new Date().toISOString()); } catch {}
+  loadStories(ids);
   let page = 0, dividerDone = false;
   const list = document.getElementById("list"), more = document.getElementById("more");
   async function load(){
@@ -393,7 +430,7 @@ async function pageProfile(username){
     ${u.bio ? `<p class="bio">${esc(u.bio)}</p>` : ""}
     <div style="display:flex;gap:8px;margin-bottom:18px">
       ${mine ? `<a class="btn ghost" href="#/modifier">Modifier le profil</a><a class="btn ghost" href="#/enregistres">Enregistrés</a><a class="btn ghost" href="#" id="lo2">Se déconnecter</a>`
-             : me ? `<button class="btn ${following?"ghost":""}" id="fb">${following?"Abonné":"Suivre"}</button>` : `<a class="btn" href="#/connexion">Se connecter pour suivre</a>`}
+             : me ? `<button class="btn ${following?"ghost":""}" id="fb">${following?"Abonné":"Suivre"}</button><a class="btn ghost" href="#/m/${esc(u.username)}">Message</a>` : `<a class="btn" href="#/connexion">Se connecter pour suivre</a>`}
     </div>
     ${(posts||[]).length ? `<div class="grid">${posts.map(p => `<a href="#/p/${p.id}"><img src="${esc(photoUrl(p.image_path))}" alt="" loading="lazy">${p.hidden?`<span class="flag">Masquée</span>`:""}</a>`).join("")}</div>`
       : `<div class="empty"><b>${mine ? "Vous n'avez encore rien publié." : "Aucune publication."}</b>${mine ? `<a class="btn" href="#/publier">Publier ma première photo</a>` : ""}</div>`}`;
@@ -605,9 +642,113 @@ async function pageSaved(){
   sl.innerHTML = list.length ? `<div class="grid">${list.map(p => `<a href="#/p/${p.id}"><img src="${esc(photoUrl(p.image_path))}" alt="Photo de ${esc(p.username)}" loading="lazy"></a>`).join("")}</div>` : `<div class="empty"><b>Ces publications ne sont plus disponibles.</b></div>`;
 }
 
+/* ---------- stories ---------- */
+async function loadStories(ids){
+  const bar = document.getElementById("sbar"); if (!bar) return;
+  const { data } = await sb.from("stories").select("id,user_id,image_path,created_at,profiles(username,avatar_url,full_name)")
+    .in("user_id", ids).gt("expires_at", new Date().toISOString()).order("created_at", { ascending:true });
+  const groups = new Map();
+  for (const st of (data || [])) { if (!groups.has(st.user_id)) groups.set(st.user_id, { user: st.profiles, uid: st.user_id, items: [] }); groups.get(st.user_id).items.push(st); }
+  const seenKey = "lqta_stories_seen_" + me.id; let seen = {}; try { seen = JSON.parse(localStorage.getItem(seenKey) || "{}"); } catch {}
+  const order = [...groups.values()].sort((a, b) => (a.uid === me.id ? -1 : b.uid === me.id ? 1 : 0));
+  bar.innerHTML = `<label class="sb" for="sfile" style="cursor:pointer"><span class="ring add">${ICON.plus}</span><span class="n">Votre story</span></label><input id="sfile" type="file" accept="image/*" class="sr">`
+    + order.map((g, i) => { const last = g.items[g.items.length - 1].id; return `<button class="sb" data-g="${i}"><span class="ring ${seen[g.uid] >= last ? "seen" : ""}">${avatar(g.user)}</span><span class="n">${g.uid === me.id ? "Moi" : esc(g.user.username)}</span></button>`; }).join("");
+  document.getElementById("sfile").onchange = async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const b = await resizeImage(f, 1080); const path = `${me.id}/story-${Date.now()}.jpg`;
+      const up = await sb.storage.from("photos").upload(path, b, { contentType:"image/jpeg" }); if (up.error) throw up.error;
+      const { error } = await sb.from("stories").insert({ user_id: me.id, image_path: path }); if (error) throw error;
+      loadStories(ids);
+    } catch (err) { bar.insertAdjacentHTML("afterend", `<p class="err">${esc(err.message)}</p>`); }
+  };
+  bar.querySelectorAll("[data-g]").forEach(b => b.onclick = () => openStories(order, Number(b.dataset.g), seenKey, () => loadStories(ids)));
+}
+function openStories(groups, gi, seenKey, onDone){
+  let ii = 0, timer = null;
+  const ov = document.createElement("div"); ov.className = "sv"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-label", "Story");
+  document.body.appendChild(ov); document.body.style.overflow = "hidden";
+  function close(){ clearTimeout(timer); ov.remove(); document.body.style.overflow = ""; document.removeEventListener("keydown", key); onDone && onDone(); }
+  function key(e){ if (e.key === "Escape") close(); else if (e.key === "ArrowRight") next(); else if (e.key === "ArrowLeft") prev(); }
+  document.addEventListener("keydown", key);
+  function next(){ const g = groups[gi]; if (ii < g.items.length - 1) { ii++; show(); } else if (gi < groups.length - 1) { gi++; ii = 0; show(); } else close(); }
+  function prev(){ if (ii > 0) { ii--; show(); } else if (gi > 0) { gi--; ii = 0; show(); } }
+  function show(){
+    clearTimeout(timer);
+    const g = groups[gi], st = g.items[ii];
+    try { const seen = JSON.parse(localStorage.getItem(seenKey) || "{}"); seen[g.uid] = Math.max(seen[g.uid] || 0, st.id); localStorage.setItem(seenKey, JSON.stringify(seen)); } catch {}
+    ov.innerHTML = `<div class="bars">${g.items.map((_, k) => `<i><b style="width:${k < ii ? 100 : 0}%"></b></i>`).join("")}</div>
+      <div class="hd">${avatar(g.user)}<span>${esc(g.user.username)} <small>${ago(st.created_at)}</small></span><button aria-label="Fermer" data-x>×</button></div>
+      <img src="${esc(photoUrl(st.image_path))}" alt="Story de ${esc(g.user.username)}">
+      <button class="tap l" aria-label="Précédente" data-p></button><button class="tap r" aria-label="Suivante" data-n></button>
+      ${g.uid === me.id ? `<button class="del" data-d>Supprimer cette story</button>` : ""}`;
+    ov.querySelector("[data-x]").onclick = close; ov.querySelector("[data-p]").onclick = prev; ov.querySelector("[data-n]").onclick = next;
+    const d = ov.querySelector("[data-d]");
+    if (d) d.onclick = async () => { clearTimeout(timer); if (!confirm("Supprimer cette story ?")) { show(); return; }
+      const { error } = await sb.from("stories").delete().eq("id", st.id);
+      if (error) { show(); return; }
+      await sb.storage.from("photos").remove([st.image_path]); g.items.splice(ii, 1);
+      if (!g.items.length) { groups.splice(gi, 1); gi = Math.min(gi, groups.length - 1); ii = 0; } else ii = Math.min(ii, g.items.length - 1);
+      if (!groups.length) return close(); show(); };
+    const fill = ov.querySelectorAll(".bars i b")[ii]; fill.style.transition = "width 5s linear"; requestAnimationFrame(() => requestAnimationFrame(() => fill.style.width = "100%"));
+    timer = setTimeout(next, 5000);
+  }
+  show();
+}
+
+/* ---------- messages privés ---------- */
+async function pageMessages(){
+  if (!me) return (location.hash = "#/connexion");
+  app.innerHTML = `<h1>Messages</h1><p class="lead">Vous pouvez écrire aux comptes que vous suivez ou qui vous suivent.</p><div id="cv"><p class="lead">Chargement…</p></div>`;
+  const { data, error } = await sb.from("messages").select("sender_id,recipient_id,body,created_at,read_at").order("created_at", { ascending:false }).limit(300);
+  const cv = document.getElementById("cv");
+  if (error) { cv.innerHTML = `<p class="err">${esc(error.message)}</p>`; return; }
+  const by = new Map();
+  for (const m of data) { const o = m.sender_id === me.id ? m.recipient_id : m.sender_id; if (!by.has(o)) by.set(o, { last: m, unread: 0 }); if (m.recipient_id === me.id && !m.read_at) by.get(o).unread++; }
+  if (!by.size) { cv.innerHTML = `<div class="empty"><b>Aucune conversation.</b>Ouvrez le profil d'un compte et touchez « Message ».<br><a class="btn" href="#/decouvrir">Découvrir</a></div>`; return; }
+  const { data: ps } = await sb.from("profiles").select("id,username,full_name,avatar_url").in("id", [...by.keys()]);
+  const pm = new Map((ps || []).map(p => [p.id, p]));
+  cv.innerHTML = `<div class="conv">${[...by.entries()].filter(([id]) => pm.has(id)).map(([id, c]) => { const u = pm.get(id);
+    return `<a href="#/m/${esc(u.username)}">${avatar(u)}<span class="t"><b>${esc(u.full_name || u.username)}</b><span class="${c.unread ? "u" : ""}">${c.last.sender_id === me.id ? "Vous : " : ""}${esc(c.last.body)}</span></span>${c.unread ? `<i class="dot" aria-label="${c.unread} non lus"></i>` : ""}</a>`; }).join("")}</div>`;
+}
+
+async function pageThread(username){
+  if (!me) return (location.hash = "#/connexion");
+  const { data: u } = await sb.from("profiles").select("id,username,full_name,avatar_url").eq("username", username).maybeSingle();
+  if (!u || u.id === me.id) { app.innerHTML = `<div class="empty"><b>Conversation impossible.</b><a class="btn" href="#/messages">Retour</a></div>`; return; }
+  app.innerHTML = `<p style="margin-bottom:8px"><a href="#/messages" style="color:var(--blue);font-weight:600">← Messages</a></p>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">${avatar(u)}<a href="#/u/${esc(u.username)}"><b>${esc(u.full_name || u.username)}</b></a></div>
+    <div class="thread" id="th" aria-live="polite"></div><div id="tm"></div>
+    <form class="mform" id="mf"><label class="sr" for="mt">Votre message</label><input id="mt" maxlength="1000" placeholder="Écrire un message…" autocomplete="off"><button class="btn">Envoyer</button></form>`;
+  const th = document.getElementById("th"); let lastKey = "";
+  async function load(){
+    const { data, error } = await sb.from("messages").select("id,sender_id,body,created_at,read_at")
+      .or(`and(sender_id.eq.${me.id},recipient_id.eq.${u.id}),and(sender_id.eq.${u.id},recipient_id.eq.${me.id})`).order("created_at", { ascending:true }).limit(200);
+    if (error) { document.getElementById("tm").innerHTML = `<p class="err">${esc(error.message)}</p>`; return; }
+    const key = data.length + ":" + (data.length ? data[data.length-1].id : 0);
+    if (key !== lastKey) {
+      lastKey = key;
+      th.innerHTML = data.length ? data.map(m => `<div class="bub ${m.sender_id === me.id ? "me" : ""}">${esc(m.body)}<small>${ago(m.created_at)}</small></div>`).join("") : `<p class="lead">Dites bonjour 👋</p>`;
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+    if (data.some(m => m.sender_id === u.id && !m.read_at)) { await sb.from("messages").update({ read_at: new Date().toISOString() }).eq("recipient_id", me.id).eq("sender_id", u.id).is("read_at", null); refreshUnread(); }
+  }
+  await load();
+  clearInterval(poll); poll = setInterval(() => { if (!document.hidden && location.hash.startsWith("#/m/")) load(); }, 5000);
+  document.getElementById("mf").onsubmit = async (e) => {
+    e.preventDefault(); const inp = document.getElementById("mt"), v = inp.value.trim(); if (!v) return;
+    const btn = e.target.querySelector("button"); btn.disabled = true;
+    const { error } = await sb.from("messages").insert({ sender_id: me.id, recipient_id: u.id, body: v });
+    btn.disabled = false;
+    if (error) { document.getElementById("tm").innerHTML = `<p class="err">${error.code === "42501" ? "Vous ne pouvez écrire qu'aux comptes que vous suivez ou qui vous suivent." : esc(error.message)}</p>`; return; }
+    document.getElementById("tm").innerHTML = ""; inp.value = ""; load();
+  };
+}
+
 /* ---------- routeur ---------- */
+
 async function route(){
-  nav(); window.scrollTo(0, 0);
+  nav(); window.scrollTo(0, 0); clearInterval(poll);
   if (recovery) return pageNewPassword();
   if (location.hash.includes("access_token") || location.hash.includes("error_description")) history.replaceState(null, "", location.pathname + "#/");
   const h = (location.hash || "#/").split("?")[0];
@@ -620,13 +761,15 @@ async function route(){
   if (h === "#/recherche") return pageSearch();
   if (h === "#/notifications") return pageNotifs();
   if (h === "#/enregistres") return pageSaved();
+  if (h === "#/messages") return pageMessages();
+  if ((m = h.match(/^#\/m\/([a-z0-9_.]+)$/))) return pageThread(m[1]);
   if ((m = h.match(/^#\/p\/(\d+)$/))) return pagePost(Number(m[1]));
   if ((m = h.match(/^#\/u\/([a-z0-9_.]+)$/))) return pageProfile(m[1]);
   app.innerHTML = `<div class="empty"><b>Page introuvable.</b><a class="btn" href="#/">Retour à l'accueil</a></div>`;
 }
 
 async function loadMe(session){
-  if (!session) { me = null; mySaved = new Set(); unread = 0; return; }
+  if (!session) { me = null; mySaved = new Set(); unread = 0; msgUnread = 0; return; }
   const { data } = await sb.from("profiles").select("*").eq("id", session.user.id).maybeSingle();
   me = data || { id: session.user.id, username: "moi" };
   const { data: sv } = await sb.from("saved_posts").select("post_id").eq("user_id", me.id).limit(1000);

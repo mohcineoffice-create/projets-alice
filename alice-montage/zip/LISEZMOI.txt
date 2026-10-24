@@ -1,0 +1,3 @@
+Rejoindre les parties (Windows, cmd) :
+copy /b AliceMontage-win.zip.part00 + AliceMontage-win.zip.part01 + AliceMontage-win.zip.part02 AliceMontage-win.zip
+Taille attendue : 148093545 octets. Puis decompressez le ZIP en entier.

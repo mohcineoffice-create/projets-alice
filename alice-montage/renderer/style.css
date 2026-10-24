@@ -1,0 +1,50 @@
+:root{--bg:#14161c;--pan:#1d2029;--pan2:#252937;--line:#2f3445;--tx:#e8eaf0;--mut:#8a91a6;--acc:#4fb3ff;--acc2:#ff7a45}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px "Segoe UI",Tahoma,Arial,sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;gap:8px;align-items:center;padding:8px 12px;background:var(--pan);border-bottom:1px solid var(--line)}
+.logo{font-size:17px;margin-inline-end:10px}.logo b{color:var(--acc)}
+.sp{flex:1}
+button,select,input[type=text],input[type=number]{background:var(--pan2);color:var(--tx);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font:inherit}
+button{cursor:pointer}button:hover{border-color:var(--acc)}
+button.prim{background:var(--acc);color:#04121f;border-color:var(--acc);font-weight:600}
+button.exp{background:var(--acc2);color:#1a0a02;border-color:var(--acc2);font-weight:700}
+label{color:var(--mut);display:flex;align-items:center;gap:6px}
+main{flex:1;display:flex;min-height:0}
+#col-prev{flex:1;display:flex;flex-direction:column;min-width:0}
+#stage{flex:1;display:flex;align-items:center;justify-content:center;background:#0b0c10;min-height:0;padding:10px}
+#frame{position:relative;background:#000;overflow:hidden;max-width:100%;max-height:100%;aspect-ratio:16/9;height:100%}
+#vid{width:100%;height:100%;object-fit:cover;display:block}
+#frame.fit #vid{object-fit:contain}
+#ovl{position:absolute;inset:0;pointer-events:none}
+.ov{position:absolute;transform:translate(-50%,-50%);text-align:center;font-weight:700;white-space:pre-wrap;text-shadow:0 0 4px #000,0 0 4px #000,0 2px 6px #000;line-height:1.25}
+#transport{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--pan);border-top:1px solid var(--line);direction:ltr}
+#transport button{direction:rtl}
+#b-play{width:44px;font-size:16px}
+#insp{width:320px;overflow-x:hidden;background:var(--pan);border-inline-start:1px solid var(--line);padding:10px 14px;overflow:auto}
+#insp h3{margin:12px 0 8px;font-size:13px;color:var(--acc);border-bottom:1px solid var(--line);padding-bottom:4px}
+.vide,.note{color:var(--mut);font-size:13px}
+.row{display:flex;gap:6px;margin-bottom:6px}
+.fld{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:6px 0;color:var(--mut)}
+.fld input[type=number],.fld select{width:120px}
+.fld input[type=range]{width:130px}
+.blk{display:block;margin-top:6px}
+.it{background:var(--pan2);border:1px solid var(--line);border-radius:8px;padding:8px;margin:6px 0}
+.it input[type=text]{width:100%;margin-bottom:6px}
+.it .l{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px;color:var(--mut)}
+.it .l input[type=number]{width:58px;padding:4px}
+.it .l input[type=color]{width:34px;height:26px;padding:0;border:none;background:none}
+#timeline{height:200px;background:var(--pan);border-top:1px solid var(--line);position:relative}
+#tl-scroll{position:relative;height:100%;overflow-x:auto;overflow-y:hidden;direction:ltr}
+#ruler{height:22px;position:relative;border-bottom:1px solid var(--line);cursor:pointer}
+.tick{position:absolute;top:0;height:100%;border-left:1px solid var(--line);font-size:10px;color:var(--mut);padding-left:3px}
+.piste{position:relative;height:84px;margin-top:8px}.piste.small{height:44px}
+.clip{position:absolute;top:0;height:100%;background:linear-gradient(#37507a,#2b3d5e);border:2px solid #4a6a9e;border-radius:6px;padding:4px 6px;overflow:hidden;cursor:pointer;font-size:12px;white-space:nowrap}
+.clip.sel{border-color:var(--acc2);box-shadow:0 0 0 1px var(--acc2)}
+.clip small{display:block;color:#b9c6df}
+.tbloc{position:absolute;top:0;height:100%;border-radius:6px;padding:2px 6px;font-size:11px;overflow:hidden;white-space:nowrap;cursor:pointer}
+.tbloc.t{background:#6b4a8f;border:1px solid #9a73c4}.tbloc.s{background:#3f7a5a;border:1px solid #66b88a}
+#playhead{position:absolute;top:0;bottom:0;width:2px;background:var(--acc2);pointer-events:none;left:0}
+#progress{display:none;position:fixed;inset:auto 0 0 0;height:34px;background:#000d;align-items:center;padding:0 12px}
+#progress #bar{position:absolute;left:0;top:0;bottom:0;width:0;background:#ff7a4555}
+#plabel{position:relative}
+#toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#000d;border:1px solid var(--line);padding:8px 16px;border-radius:8px;display:none;max-width:70%}

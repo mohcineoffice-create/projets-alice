@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' file: data: blob:; style-src 'self' 'unsafe-inline'; media-src 'self' file: blob:; img-src 'self' file: data: blob:">
+<title>Alice Montage</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="logo">Alice <b>Montage</b></div>
+  <button id="b-add" class="prim">＋ استيراد فيديو</button>
+  <button id="b-open">فتح مشروع</button>
+  <button id="b-save">حفظ المشروع</button>
+  <span class="sp"></span>
+  <label>الشكل
+    <select id="s-format"><option value="16:9">أفقي 16:9</option><option value="9:16">عمودي 9:16</option><option value="1:1">مربع 1:1</option></select>
+  </label>
+  <label>الجودة
+    <select id="s-qualite"><option value="720">720p</option><option value="1080">1080p</option></select>
+  </label>
+  <button id="b-export" class="exp">تصدير MP4</button>
+</header>
+<main>
+  <section id="col-prev">
+    <div id="stage"><div id="frame"><video id="vid" playsinline></video><div id="ovl"></div></div></div>
+    <div id="transport">
+      <button id="b-play" title="تشغيل / إيقاف">▶</button>
+      <span id="t-cur">0:00.0</span> / <span id="t-tot">0:00.0</span>
+      <button id="b-split">✂ تقسيم عند المؤشر</button>
+    </div>
+  </section>
+  <aside id="insp">
+    <h3>الخصائص</h3>
+    <div id="insp-clip" class="vide">اختر مقطعًا من الشريط الزمني</div>
+    <h3>النصوص والترجمة</h3>
+    <div class="row"><button id="b-txt">＋ نص</button><button id="b-sub">＋ ترجمة</button></div>
+    <div id="liste-txt"></div>
+    <h3>الموسيقى</h3>
+    <div class="row"><button id="b-mus">اختيار موسيقى</button><button id="b-mus-x">إزالة</button></div>
+    <div id="mus-info" class="note">لا توجد موسيقى</div>
+    <label class="blk">مستوى الصوت <input id="r-mus" type="range" min="0" max="1" step="0.05" value="0.3"></label>
+  </aside>
+</main>
+<section id="timeline">
+  <div id="tl-scroll">
+    <div id="ruler"></div>
+    <div id="piste-v" class="piste"></div>
+    <div id="piste-t" class="piste small"></div>
+    <div id="playhead"></div>
+  </div>
+</section>
+<div id="progress"><div id="bar"></div><span id="plabel"></span></div>
+<div id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>

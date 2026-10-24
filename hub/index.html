@@ -81,6 +81,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
     <div id="plist"></div>
     <div class="fld"><label for="ppre">إضافة مزوّد</label>
       <select id="ppre"></select></div>
+    <p class="note" id="phelp" hidden><span id="phtxt"></span> <a id="plink" target="_blank" rel="noopener noreferrer">افتح صفحة إنشاء المفتاح</a></p>
     <div class="fld"><label for="pname">الاسم</label><input id="pname"></div>
     <div class="fld"><label for="pbase">عنوان الواجهة (Base URL)</label><input id="pbase" class="ltr" placeholder="https://…"></div>
     <div class="fld"><label for="pkey">المفتاح (اتركه فارغًا للنماذج المحلية)</label><input id="pkey" class="ltr" type="password" autocomplete="off"></div>
@@ -104,10 +105,10 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 const $ = (id) => document.getElementById(id);
 const PRESETS = [
   { n: "اختر…", base: "", model: "" },
-  { n: "Google Gemini", base: "https://generativelanguage.googleapis.com/v1beta/openai", model: "gemini-2.5-flash" },
-  { n: "DeepSeek", base: "https://api.deepseek.com", model: "deepseek-chat" },
-  { n: "OpenRouter", base: "https://openrouter.ai/api/v1", model: "" },
-  { n: "Groq", base: "https://api.groq.com/openai/v1", model: "" },
+  { n: "Google Gemini", base: "https://generativelanguage.googleapis.com/v1beta/openai", model: "gemini-2.5-flash", keyUrl: "https://aistudio.google.com/apikey", help: "سجّل الدخول بحساب Google، واضغط «Create API key»، ثم انسخ المفتاح والصقه هنا." },
+  { n: "DeepSeek", base: "https://api.deepseek.com", model: "deepseek-chat", keyUrl: "https://platform.deepseek.com/api_keys", help: "أنشئ حسابًا وفعّل رصيدًا صغيرًا ثم أنشئ مفتاحًا." },
+  { n: "OpenRouter", base: "https://openrouter.ai/api/v1", model: "", keyUrl: "https://openrouter.ai/keys", help: "فيه نماذج مجانية (اسمها ينتهي بـ :free). انسخ اسم النموذج من موقعهم إلى خانة النموذج." },
+  { n: "Groq", base: "https://api.groq.com/openai/v1", model: "", keyUrl: "https://console.groq.com/keys", help: "لهم خطة مجانية محدودة. انسخ اسم النموذج من موقعهم." },
   { n: "LM Studio (محلي)", base: "http://localhost:1234/v1", model: "" },
   { n: "Ollama (محلي)", base: "http://localhost:11434/v1", model: "" },
   { n: "واجهة أخرى متوافقة مع OpenAI", base: "", model: "" }
@@ -264,7 +265,7 @@ function renderLists() {
   }
 }
 $("ppre").innerHTML = ""; PRESETS.forEach((p, i) => { const o = document.createElement("option"); o.value = i; o.textContent = p.n; $("ppre").appendChild(o); });
-$("ppre").onchange = () => { const p = PRESETS[+$("ppre").value]; if (+$("ppre").value) { $("pname").value = p.n; $("pbase").value = p.base; $("pmodel").value = p.model; } };
+$("ppre").onchange = () => { const p = PRESETS[+$("ppre").value]; $("phelp").hidden = !p.keyUrl; if (p.keyUrl) { $("plink").href = p.keyUrl; $("phtxt").textContent = p.help; } if (+$("ppre").value) { $("pname").value = p.n; $("pbase").value = p.base; $("pmodel").value = p.model; } };
 $("padd").onclick = () => {
   const name = $("pname").value.trim(), base = $("pbase").value.trim();
   if (!name || !/^https?:\/\//.test(base)) { alert("اكتب اسمًا وعنوانًا صحيحًا يبدأ بـhttps://"); return; }

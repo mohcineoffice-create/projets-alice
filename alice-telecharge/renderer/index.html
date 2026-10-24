@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data:">
+<title>Alice Telecharge</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="logo">Alice <b>Télécharge</b></div>
+  <span class="sp"></span>
+  <span id="ver" class="mut"></span>
+  <button id="b-maj" title="تحديث yt-dlp عند تعطّل موقع ما">تحديث المحرك</button>
+</header>
+<section id="saisie">
+  <textarea id="urls" rows="2" placeholder="الصق رابطًا أو عدة روابط (رابط في كل سطر) ثم اضغط «إضافة»"></textarea>
+  <div class="row">
+    <label>النوع <select id="s-mode"></select></label>
+    <label><input type="checkbox" id="c-pl"> قائمة تشغيل كاملة</label>
+    <label class="mut"><input type="checkbox" id="c-auto" checked> ابدأ التحميل فور الإضافة</label>
+    <span class="sp"></span>
+    <button id="b-add" class="prim">＋ إضافة</button>
+  </div>
+  <div class="row">
+    <label>مجلد الحفظ <input id="i-dos" type="text" readonly></label>
+    <button id="b-dos">تغيير</button><button id="b-open">فتح المجلد</button>
+    <span class="sp"></span>
+    <button id="b-all">▶ تحميل الكل</button><button id="b-clear">مسح المنتهي</button>
+  </div>
+</section>
+<main id="liste"><div class="vide" id="vide">لا توجد تحميلات بعد. الصق رابطًا في الأعلى.</div></main>
+<footer>حمّل فقط ما يحق لك تحميله: محتواك، أو المحتوى المرخَّص أو المجاني. بعض المواقع تمنع التحميل في شروطها.</footer>
+<div id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>

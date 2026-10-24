@@ -1,0 +1,1 @@
+{"name":"alice-telecharge","version":"0.1.0","description":"Alice Telecharge - GUI pour yt-dlp","main":"main.js","license":"MIT","devDependencies":{"electron":"^31.7.7"}}

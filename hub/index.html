@@ -48,6 +48,7 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <body>
 <header>
   <h1>Alice Hub</h1>
+  <button id="btools">الأدوات</button>
   <button id="bset">الإعدادات</button>
   <button id="bnew">محادثة جديدة</button>
 </header>
@@ -58,6 +59,18 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
   <button class="pri" id="bsend">إرسال</button>
   <button type="button" id="bstop" hidden>إيقاف</button>
 </form>
+
+<dialog id="tdlg">
+  <div class="pan">
+    <h2>الأدوات (تشغيل يدوي، بلا نموذج)</h2>
+    <p class="note">اختر أداة، املأ الحقول، ثم اضغط «تشغيل». أنت من يضغط، فلا موافقة إضافية.</p>
+    <div class="fld"><label for="tsel">الأداة</label><select id="tsel"></select></div>
+    <div id="tform" class="pan" style="padding:0"></div>
+    <div><button class="pri" id="trun">تشغيل</button> <span id="tmsg" class="note"></span></div>
+    <pre id="tout" class="ltr" style="white-space:pre-wrap;word-break:break-word;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;max-height:280px;overflow:auto;margin:0"></pre>
+    <div><button id="tclose">إغلاق</button></div>
+  </div>
+</dialog>
 
 <dialog id="dlg">
   <div class="pan">
@@ -275,6 +288,57 @@ $("bnew").onclick = () => { if (!busy) newChat(); };
 $("bstop").onclick = () => { stop = true; };
 $("f").onsubmit = (e) => { e.preventDefault(); const t = $("inp").value.trim(); if (!t || busy) return; $("inp").value = ""; send(t); };
 $("inp").onkeydown = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("f").requestSubmit(); } };
+/* ---------- تشغيل الأدوات يدويًا ---------- */
+let manual = [];
+async function loadManual() {
+  manual = [];
+  for (const c of cfg.mcp) {
+    if (c.on === false) continue;
+    try { if (!c.tools) { c.tools = await listTools(c); save(); } } catch (e) { $("tmsg").textContent = "تعذّر قراءة «" + c.name + "»: " + e.message; continue; }
+    for (const t of c.tools) manual.push({ c, t });
+  }
+  const sel = $("tsel"); sel.textContent = "";
+  manual.forEach((m, i) => { const o = document.createElement("option"); o.value = i; o.textContent = m.c.name + " ← " + m.t.name; sel.appendChild(o); });
+  renderForm();
+}
+function renderForm() {
+  const f = $("tform"); f.textContent = ""; $("tout").textContent = "";
+  const m = manual[+$("tsel").value]; if (!m) { $("tmsg").textContent = "لا توجد أدوات: أضف ملحقًا من الإعدادات."; return; }
+  const d = document.createElement("p"); d.className = "note"; d.textContent = m.t.description || ""; f.appendChild(d);
+  const sch = m.t.inputSchema || {}, req = sch.required || [];
+  for (const [k, v] of Object.entries(sch.properties || {})) {
+    const w = document.createElement("div"); w.className = "fld";
+    const l = document.createElement("label"); l.textContent = k + (req.includes(k) ? " *" : "") + (v.description ? " — " + v.description : ""); l.htmlFor = "tf_" + k; w.appendChild(l);
+    let inp;
+    if (Array.isArray(v.enum)) { inp = document.createElement("select"); ["", ...v.enum].forEach((x) => { const o = document.createElement("option"); o.value = x; o.textContent = x || "—"; inp.appendChild(o); }); }
+    else if (v.type === "boolean") { inp = document.createElement("select"); [["", "—"], ["true", "نعم"], ["false", "لا"]].forEach(([a, b]) => { const o = document.createElement("option"); o.value = a; o.textContent = b; inp.appendChild(o); }); }
+    else if (v.type === "integer" || v.type === "number") { inp = document.createElement("input"); inp.type = "number"; inp.className = "ltr"; if (v.minimum !== undefined) inp.min = v.minimum; if (v.maximum !== undefined) inp.max = v.maximum; }
+    else if (v.type === "object" || v.type === "array") { inp = document.createElement("textarea"); inp.className = "ltr"; inp.placeholder = "JSON"; }
+    else { inp = document.createElement("input"); inp.className = "ltr"; }
+    inp.id = "tf_" + k; inp.dataset.k = k; inp.dataset.t = v.type || "string"; w.appendChild(inp); f.appendChild(w);
+  }
+}
+$("btools").onclick = async () => { $("tmsg").textContent = "جارٍ التحميل…"; $("tdlg").showModal(); await loadManual(); if (manual.length) $("tmsg").textContent = ""; };
+$("tsel").onchange = renderForm;
+$("tclose").onclick = () => $("tdlg").close();
+$("trun").onclick = async () => {
+  const m = manual[+$("tsel").value]; if (!m) return;
+  const args = {};
+  try {
+    for (const el of $("tform").querySelectorAll("[data-k]")) {
+      const v = el.value.trim(); if (v === "") continue;
+      const t = el.dataset.t;
+      args[el.dataset.k] = t === "integer" ? parseInt(v, 10) : t === "number" ? Number(v) : t === "boolean" ? v === "true" : (t === "object" || t === "array") ? JSON.parse(v) : v;
+    }
+  } catch (e) { $("tmsg").textContent = "قيمة غير صالحة: " + e.message; return; }
+  $("trun").disabled = true; $("tmsg").textContent = "جارٍ التنفيذ…"; $("tout").textContent = "";
+  try {
+    const r = await rpc(m.c, "tools/call", { name: m.t.name, arguments: args }, Date.now());
+    let text = ((r && r.content) || []).filter((x) => x.type === "text").map((x) => x.text).join("\n") || JSON.stringify(r, null, 2);
+    $("tout").textContent = (r && r.isError ? "خطأ: " : "") + text; $("tmsg").textContent = "";
+  } catch (e) { $("tmsg").textContent = "فشل: " + e.message; }
+  $("trun").disabled = false;
+};
 newChat(); bar();
 </script>
 </body>

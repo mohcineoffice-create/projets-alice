@@ -216,6 +216,7 @@ async function runTool(key, args) {
 async function send(text) {
   const p = cfg.providers.find((x) => x.id === cfg.active);
   if (!p) { add("m sys err", "أضف مزوّد نموذج أولًا من الإعدادات."); return; }
+  if (!p.key && !/^http:\/\/(localhost|127\.0\.0\.1)/.test(p.base)) { add("m sys err", "مزوّد «" + p.name + "» محفوظ بلا مفتاح. افتح الإعدادات وأضفه من جديد مع المفتاح."); return; }
   busy = true; stop = false; $("bsend").disabled = true; $("bstop").hidden = false;
   add("m u", text); history.push({ role: "user", content: text });
   try {
@@ -250,7 +251,7 @@ function renderLists() {
   const pl = $("plist"); pl.textContent = "";
   for (const p of cfg.providers) {
     const d = document.createElement("div"); d.className = "item";
-    const s = document.createElement("span"); s.textContent = p.name + (p.id === cfg.active ? " ✓" : ""); const sm = document.createElement("small"); sm.className = "ltr"; sm.textContent = p.base + " · " + (p.model || "—"); s.appendChild(sm);
+    const s = document.createElement("span"); s.textContent = p.name + (p.id === cfg.active ? " ✓" : ""); const sm = document.createElement("small"); sm.className = "ltr"; sm.textContent = p.base + " · " + (p.model || "—") + (p.key || /^http:\/\/(localhost|127\.0\.0\.1)/.test(p.base) ? "" : " · ⚠ بلا مفتاح: احذفه وأضفه من جديد"); s.appendChild(sm);
     const u = document.createElement("button"); u.textContent = "استعمال"; u.onclick = () => { cfg.active = p.id; save(); renderLists(); bar(); };
     const x = document.createElement("button"); x.className = "dng"; x.textContent = "حذف"; x.onclick = () => { cfg.providers = cfg.providers.filter((q) => q.id !== p.id); if (cfg.active === p.id) cfg.active = cfg.providers[0] ? cfg.providers[0].id : null; save(); renderLists(); bar(); };
     d.append(s, u, x); pl.appendChild(d);
@@ -270,8 +271,11 @@ $("padd").onclick = () => {
   const name = $("pname").value.trim(), base = $("pbase").value.trim();
   if (!name || !/^https?:\/\//.test(base)) { alert("اكتب اسمًا وعنوانًا صحيحًا يبدأ بـhttps://"); return; }
   if (/^http:\/\//.test(base) && !/^http:\/\/(localhost|127\.0\.0\.1)/.test(base)) { alert("العناوين غير المشفّرة مسموحة للنماذج المحلية فقط."); return; }
-  const p = { id: uid(), name, base, key: $("pkey").value.trim(), model: $("pmodel").value.trim() };
-  cfg.providers.push(p); cfg.active = p.id; save();
+  const key = $("pkey").value.trim(), local = /^http:\/\/(localhost|127\.0\.0\.1)/.test(base);
+  if (!key && !local) { alert("هذا المزوّد يحتاج مفتاحًا. أنشئه من الرابط أعلاه والصقه في خانة المفتاح، ثم احفظ."); return; }
+  let p = cfg.providers.find((q) => q.name === name && q.base === base);
+  if (p) { p.key = key; p.model = $("pmodel").value.trim(); } else { p = { id: uid(), name, base, key, model: $("pmodel").value.trim() }; cfg.providers.push(p); }
+  cfg.active = p.id; save();
   $("pkey").value = ""; $("pname").value = ""; $("pbase").value = ""; $("pmodel").value = ""; $("ppre").value = 0;
   renderLists(); bar();
 };

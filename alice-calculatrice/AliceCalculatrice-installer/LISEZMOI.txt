@@ -1,0 +1,4 @@
+Alice Calculatrice - calculatrice scientifique (maths, physique, chimie)
+1) Double-cliquez sur Installer_AliceCalculatrice.bat (premiere fois seulement, ~25 Mo a telecharger).
+2) Ensuite lancez AliceCalculatrice\Alice Calculatrice.exe
+Si Alice Montage ou Alice Telecharge est deja installe a cote, le moteur Electron est copie localement.

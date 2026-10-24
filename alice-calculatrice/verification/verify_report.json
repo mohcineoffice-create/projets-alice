@@ -1,0 +1,189 @@
+{
+ "حساب عددي vs mpmath": {
+  "pass": 120,
+  "fail": 0,
+  "failures": []
+ },
+ "حساب دقيق (قيم معروفة)": {
+  "pass": 20,
+  "fail": 0,
+  "failures": []
+ },
+ "حل معادلات كثيرة الحدود vs numpy": {
+  "pass": 40,
+  "fail": 0,
+  "failures": []
+ },
+ "جمل خطية vs numpy": {
+  "pass": 24,
+  "fail": 0,
+  "failures": []
+ },
+ "معادلات متنوعة": {
+  "pass": 7,
+  "fail": 0,
+  "failures": []
+ },
+ "اشتقاق vs اشتقاق عددي": {
+  "pass": 48,
+  "fail": 0,
+  "failures": []
+ },
+ "تكامل محدود vs scipy": {
+  "pass": 11,
+  "fail": 0,
+  "failures": []
+ },
+ "تكامل غير محدود (اشتقاق النتيجة)": {
+  "pass": 12,
+  "fail": 0,
+  "failures": []
+ },
+ "نهايات": {
+  "pass": 14,
+  "fail": 0,
+  "failures": []
+ },
+ "منشور تايلور": {
+  "pass": 6,
+  "fail": 0,
+  "failures": []
+ },
+ "مصفوفات: المحدد vs numpy": {
+  "pass": 25,
+  "fail": 0,
+  "failures": []
+ },
+ "مصفوفات: الرتبة vs numpy": {
+  "pass": 25,
+  "fail": 0,
+  "failures": []
+ },
+ "مصفوفات: المقلوب vs numpy": {
+  "pass": 25,
+  "fail": 0,
+  "failures": []
+ },
+ "مصفوفات: القيم الذاتية": {
+  "pass": 25,
+  "fail": 0,
+  "failures": []
+ },
+ "إحصاء vs numpy": {
+  "pass": 20,
+  "fail": 0,
+  "failures": []
+ },
+ "انحدار خطي vs scipy": {
+  "pass": 20,
+  "fail": 0,
+  "failures": []
+ },
+ "توزيع طبيعي vs scipy": {
+  "pass": 15,
+  "fail": 0,
+  "failures": []
+ },
+ "توزيع طبيعي (معكوس)": {
+  "pass": 15,
+  "fail": 0,
+  "failures": []
+ },
+ "ثنائي الحدين vs scipy": {
+  "pass": 15,
+  "fail": 0,
+  "failures": []
+ },
+ "بواسون vs scipy": {
+  "pass": 15,
+  "fail": 0,
+  "failures": []
+ },
+ "t وخي-تربيع vs scipy": {
+  "pass": 15,
+  "fail": 0,
+  "failures": []
+ },
+ "t وخي-تربيع (معكوس)": {
+  "pass": 15,
+  "fail": 0,
+  "failures": []
+ },
+ "تحليل أولي": {
+  "pass": 6,
+  "fail": 0,
+  "failures": []
+ },
+ "اختبار الأولية": {
+  "pass": 7,
+  "fail": 0,
+  "failures": []
+ },
+ "ق.م.أ و م.م.أ": {
+  "pass": 4,
+  "fail": 0,
+  "failures": []
+ },
+ "تغيير الأساس": {
+  "pass": 4,
+  "fail": 0,
+  "failures": []
+ },
+ "تحويل الوحدات (قيم قياسية)": {
+  "pass": 15,
+  "fail": 0,
+  "failures": []
+ },
+ "رفض التحويل غير المتوافق": {
+  "pass": 3,
+  "fail": 0,
+  "failures": []
+ },
+ "قوانين الفيزياء: ذهاب وإياب": {
+  "pass": 197,
+  "fail": 1,
+  "failures": [
+   "dilatation:t->v [6.020704460797662, -6.020704460797662] vs 6.965"
+  ]
+ },
+ "قوانين الفيزياء: قيم معروفة": {
+  "pass": 2,
+  "fail": 0,
+  "failures": []
+ },
+ "الكتلة المولية (قيم IUPAC)": {
+  "pass": 20,
+  "fail": 0,
+  "failures": []
+ },
+ "موازنة المعادلات (إعادة العدّ)": {
+  "pass": 20,
+  "fail": 0,
+  "failures": []
+ },
+ "موازنة المعادلات (عدّ مستقل)": {
+  "pass": 20,
+  "fail": 0,
+  "failures": []
+ },
+ "قياس العناصر المتفاعلة": {
+  "pass": 1,
+  "fail": 0,
+  "failures": []
+ },
+ "المتفاعل المحدّ": {
+  "pass": 1,
+  "fail": 0,
+  "failures": []
+ },
+ "pH (حسابات معروفة)": {
+  "pass": 7,
+  "fail": 0,
+  "failures": []
+ },
+ "الصيغة التجريبية والجزيئية": {
+  "pass": 2,
+  "fail": 0,
+  "failures": []
+ }
+}
